@@ -21,6 +21,22 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    val webClientId = try {
+      val gsFile = file("google-services.json")
+      if (gsFile.exists()) {
+        val jsonText = gsFile.readText()
+        val match = Regex("\"client_type\"\\s*:\\s*3[\\s\\S]*?\"client_id\"\\s*:\\s*\"([^\"]+)\"").find(jsonText)
+          ?: Regex("\"client_id\"\\s*:\\s*\"([^\"]+)\"[\\s\\S]*?\"client_type\"\\s*:\\s*3").find(jsonText)
+        match?.groupValues?.get(1) ?: "247548670509-7flpquvd9l60pc1jvrcjpmgemadbba1h.apps.googleusercontent.com"
+      } else {
+        "247548670509-7flpquvd9l60pc1jvrcjpmgemadbba1h.apps.googleusercontent.com"
+      }
+    } catch (e: Exception) {
+      "247548670509-7flpquvd9l60pc1jvrcjpmgemadbba1h.apps.googleusercontent.com"
+    }
+
+    buildConfigField("String", "DEFAULT_WEB_CLIENT_ID", "\"$webClientId\"")
   }
 
   // Do not remove or modify these signingConfigs. They are necessary for building, installing,

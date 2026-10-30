@@ -3,6 +3,7 @@ package com.example.ui.screens
 import android.app.Activity
 import android.util.Log
 import android.util.Patterns
+import com.example.BuildConfig
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -227,7 +228,7 @@ fun AuthDialog(
                                 isGoogleLoading = true
                                 errorMessage = ""
                                 try {
-                                    val webClientId = run {
+                                    val webClientId = BuildConfig.DEFAULT_WEB_CLIENT_ID.ifEmpty {
                                         val resId = context.resources.getIdentifier("default_web_client_id", "string", context.packageName)
                                             .takeIf { it != 0 }
                                             ?: context.resources.getIdentifier("default_web_client_id", "string", "app.lessafakerny.android")

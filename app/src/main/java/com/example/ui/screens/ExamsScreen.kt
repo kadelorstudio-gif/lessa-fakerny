@@ -3,6 +3,7 @@ package com.example.ui.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,6 +53,7 @@ import com.example.data.Exam
 import com.example.ui.components.GlassBadge
 import com.example.ui.components.GlassCard
 import com.example.ui.components.GlassNativeAdCard
+import com.example.ui.theme.NeonMagenta
 import com.example.ui.theme.NeonViolet
 import com.example.ui.theme.SoftLavender
 import com.example.ui.theme.StatusError
@@ -201,23 +203,54 @@ fun ExamsScreen(
             }
         }
 
-        // Floating Action Button
-        FloatingActionButton(
-            onClick = onAddExamClick,
+        // Luminous Glass Glowing FAB
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 24.dp, bottom = 80.dp)
+                .padding(start = 20.dp, bottom = 84.dp)
                 .shadow(
-                    elevation = 16.dp,
+                    elevation = 20.dp,
                     shape = CircleShape,
-                    spotColor = NeonViolet.copy(alpha = 0.6f)
+                    spotColor = NeonViolet.copy(alpha = 0.75f),
+                    ambientColor = NeonMagenta.copy(alpha = 0.45f)
                 )
+                .clip(CircleShape)
+                .background(
+                    androidx.compose.ui.graphics.Brush.linearGradient(
+                        listOf(
+                            NeonViolet,
+                            com.example.ui.theme.NeonMagenta,
+                            NeonViolet
+                        )
+                    )
+                )
+                .border(
+                    BorderStroke(
+                        1.5.dp,
+                        androidx.compose.ui.graphics.Brush.linearGradient(
+                            listOf(Color.White.copy(alpha = 0.85f), NeonViolet, Color.White.copy(alpha = 0.4f))
+                        )
+                    ),
+                    CircleShape
+                )
+                .clickable(onClick = onAddExamClick)
+                .size(58.dp)
                 .testTag("add_exam_fab"),
-            containerColor = NeonViolet,
-            contentColor = Color.White,
-            shape = CircleShape
+            contentAlignment = Alignment.Center
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Exam", modifier = Modifier.size(26.dp))
+            // Specular top shine
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(28.dp)
+                    .align(Alignment.TopCenter)
+                    .background(
+                        androidx.compose.ui.graphics.Brush.verticalGradient(
+                            listOf(Color.White.copy(alpha = 0.35f), Color.Transparent)
+                        )
+                    )
+            )
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Exam", tint = Color.White, modifier = Modifier.size(28.dp))
         }
 
         // Delete Confirmation Dialog

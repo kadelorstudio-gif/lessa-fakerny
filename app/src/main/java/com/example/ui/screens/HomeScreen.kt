@@ -332,23 +332,59 @@ fun HomeScreen(
             }
         }
 
-        // Floating Action Button
-        FloatingActionButton(
-            onClick = onAddLectureClick,
+        // Luminous Glass Glowing FAB
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 24.dp, bottom = 80.dp)
+                .padding(start = 20.dp, bottom = 84.dp)
                 .shadow(
-                    elevation = 16.dp,
+                    elevation = 20.dp,
                     shape = CircleShape,
-                    spotColor = NeonCyan.copy(alpha = 0.6f)
+                    spotColor = NeonCyan.copy(alpha = 0.75f),
+                    ambientColor = NeonBlue.copy(alpha = 0.45f)
                 )
+                .clip(CircleShape)
+                .background(
+                    Brush.linearGradient(
+                        listOf(
+                            NeonCyan,
+                            NeonBlue,
+                            NeonCyan
+                        )
+                    )
+                )
+                .border(
+                    BorderStroke(
+                        1.5.dp,
+                        Brush.linearGradient(
+                            listOf(Color.White.copy(alpha = 0.85f), NeonCyan, Color.White.copy(alpha = 0.4f))
+                        )
+                    ),
+                    CircleShape
+                )
+                .clickable(onClick = onAddLectureClick)
+                .size(58.dp)
                 .testTag("add_lecture_fab"),
-            containerColor = NeonCyan,
-            contentColor = Color(0xFF050816),
-            shape = CircleShape
+            contentAlignment = Alignment.Center
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Lecture", modifier = Modifier.size(26.dp))
+            // Specular top shine
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(28.dp)
+                    .align(Alignment.TopCenter)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color.White.copy(alpha = 0.35f), Color.Transparent)
+                        )
+                    )
+            )
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Add Lecture",
+                tint = Color(0xFF050816),
+                modifier = Modifier.size(28.dp)
+            )
         }
     }
 }

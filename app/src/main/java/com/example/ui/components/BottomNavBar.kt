@@ -44,6 +44,7 @@ import com.example.ui.theme.NeonCyan
 import com.example.ui.theme.NeonMagenta
 import com.example.ui.theme.NeonViolet
 import com.example.ui.theme.SurfaceCard
+import com.example.ui.theme.SurfaceElevated
 import com.example.ui.theme.TextMuted
 import com.example.ui.theme.TextPrimary
 
@@ -60,9 +61,10 @@ fun GlassBottomNavBar(
 ) {
     val dualBorderBrush = Brush.horizontalGradient(
         colors = listOf(
-            NeonCyan.copy(alpha = 0.5f),
-            NeonMagenta.copy(alpha = 0.35f),
-            NeonViolet.copy(alpha = 0.45f)
+            NeonCyan.copy(alpha = 0.65f),
+            Color.White.copy(alpha = 0.40f),
+            NeonMagenta.copy(alpha = 0.50f),
+            NeonViolet.copy(alpha = 0.60f)
         )
     )
 
@@ -70,22 +72,44 @@ fun GlassBottomNavBar(
         modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .padding(horizontal = 16.dp, vertical = 10.dp)
-            .height(66.dp)
+            .padding(horizontal = 14.dp, vertical = 8.dp)
+            .height(68.dp)
             .shadow(
-                elevation = 16.dp,
-                shape = RoundedCornerShape(33.dp),
-                spotColor = NeonCyan.copy(alpha = 0.25f),
-                ambientColor = NeonViolet.copy(alpha = 0.15f)
+                elevation = 20.dp,
+                shape = RoundedCornerShape(34.dp),
+                spotColor = NeonCyan.copy(alpha = 0.35f),
+                ambientColor = NeonViolet.copy(alpha = 0.20f)
             )
-            .clip(RoundedCornerShape(33.dp))
-            .background(SurfaceCard.copy(alpha = 0.95f))
-            .border(BorderStroke(1.2.dp, dualBorderBrush), RoundedCornerShape(33.dp))
+            .clip(RoundedCornerShape(34.dp))
+            .background(
+                Brush.linearGradient(
+                    listOf(
+                        SurfaceCard.copy(alpha = 0.92f),
+                        SurfaceElevated.copy(alpha = 0.82f),
+                        SurfaceCard.copy(alpha = 0.95f)
+                    )
+                )
+            )
+            .border(BorderStroke(1.2.dp, dualBorderBrush), RoundedCornerShape(34.dp))
             .testTag("bottom_nav_bar")
     ) {
+        // Specular Top Shine on Navigation Glass Bar
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(26.dp)
+                .align(Alignment.TopCenter)
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color.White.copy(alpha = 0.12f), Color.Transparent)
+                    )
+                )
+        )
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .align(Alignment.Center)
                 .padding(horizontal = 4.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
@@ -131,7 +155,7 @@ fun GlassBottomNavBar(
                 title = strings.navSettings,
                 icon = Icons.Default.Settings,
                 isSelected = currentScreen == AppScreen.SETTINGS,
-                accentColor = NeonViolet,
+                accentColor = NeonMagenta,
                 onClick = { onScreenSelected(AppScreen.SETTINGS) }
             )
         }
@@ -151,16 +175,34 @@ fun NavBarItem(
 
     val bgModifier = if (isSelected) {
         Modifier
+            .shadow(
+                elevation = 8.dp,
+                shape = CircleShape,
+                spotColor = accentColor.copy(alpha = 0.5f)
+            )
             .clip(CircleShape)
             .background(
                 brush = Brush.horizontalGradient(
                     colors = listOf(
-                        accentColor.copy(alpha = 0.25f),
-                        accentColor.copy(alpha = 0.10f)
+                        accentColor.copy(alpha = 0.30f),
+                        SurfaceCard.copy(alpha = 0.90f),
+                        accentColor.copy(alpha = 0.15f)
                     )
                 )
             )
-            .border(BorderStroke(1.dp, accentColor.copy(alpha = 0.5f)), CircleShape)
+            .border(
+                BorderStroke(
+                    1.2.dp,
+                    Brush.horizontalGradient(
+                        listOf(
+                            accentColor.copy(alpha = 0.85f),
+                            Color.White.copy(alpha = 0.5f),
+                            accentColor.copy(alpha = 0.4f)
+                        )
+                    )
+                ),
+                CircleShape
+            )
     } else {
         Modifier
             .clip(CircleShape)
@@ -183,7 +225,11 @@ fun NavBarItem(
                 imageVector = icon,
                 contentDescription = title,
                 tint = if (isSelected) accentColor else TextMuted,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier
+                    .size(20.dp)
+                    .then(
+                        if (isSelected) Modifier.shadow(6.dp, spotColor = accentColor) else Modifier
+                    )
             )
 
             if (isSelected) {

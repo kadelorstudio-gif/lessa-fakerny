@@ -295,23 +295,54 @@ fun TimetableScreen(
             }
         }
 
-        // FAB to add lecture on currently viewed day
-        FloatingActionButton(
-            onClick = { onAddLectureClick(selectedDay) },
+        // Luminous Glass Glowing FAB to add lecture on currently viewed day
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 24.dp, bottom = 80.dp)
+                .padding(start = 20.dp, bottom = 84.dp)
                 .shadow(
-                    elevation = 16.dp,
+                    elevation = 20.dp,
                     shape = CircleShape,
-                    spotColor = NeonBlue.copy(alpha = 0.6f)
+                    spotColor = NeonBlue.copy(alpha = 0.75f),
+                    ambientColor = NeonCyan.copy(alpha = 0.45f)
                 )
+                .clip(CircleShape)
+                .background(
+                    androidx.compose.ui.graphics.Brush.linearGradient(
+                        listOf(
+                            NeonBlue,
+                            NeonCyan,
+                            NeonBlue
+                        )
+                    )
+                )
+                .border(
+                    BorderStroke(
+                        1.5.dp,
+                        androidx.compose.ui.graphics.Brush.linearGradient(
+                            listOf(Color.White.copy(alpha = 0.85f), NeonBlue, Color.White.copy(alpha = 0.4f))
+                        )
+                    ),
+                    CircleShape
+                )
+                .clickable(onClick = { onAddLectureClick(selectedDay) })
+                .size(58.dp)
                 .testTag("timetable_add_fab"),
-            containerColor = NeonBlue,
-            contentColor = Color.White,
-            shape = CircleShape
+            contentAlignment = Alignment.Center
         ) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Lecture", modifier = Modifier.size(26.dp))
+            // Specular top shine
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(28.dp)
+                    .align(Alignment.TopCenter)
+                    .background(
+                        androidx.compose.ui.graphics.Brush.verticalGradient(
+                            listOf(Color.White.copy(alpha = 0.35f), Color.Transparent)
+                        )
+                    )
+            )
+            Icon(imageVector = Icons.Default.Add, contentDescription = "Add Lecture", tint = Color.White, modifier = Modifier.size(28.dp))
         }
 
         // Delete Confirmation Dialog
