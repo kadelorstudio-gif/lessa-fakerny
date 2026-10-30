@@ -227,10 +227,15 @@ fun AuthDialog(
                                 isGoogleLoading = true
                                 errorMessage = ""
                                 try {
-                                    val webClientId = try {
-                                        context.getString(R.string.default_web_client_id)
-                                    } catch (e: Exception) {
-                                        "247548670509-7flpquvd9l60pc1jvrcjpmgemadbba1h.apps.googleusercontent.com"
+                                    val webClientId = run {
+                                        val resId = context.resources.getIdentifier("default_web_client_id", "string", context.packageName)
+                                            .takeIf { it != 0 }
+                                            ?: context.resources.getIdentifier("default_web_client_id", "string", "app.lessafakerny.android")
+                                        if (resId != 0) {
+                                            context.getString(resId)
+                                        } else {
+                                            "247548670509-7flpquvd9l60pc1jvrcjpmgemadbba1h.apps.googleusercontent.com"
+                                        }
                                     }
 
                                     val googleIdOption = GetSignInWithGoogleOption.Builder(webClientId)

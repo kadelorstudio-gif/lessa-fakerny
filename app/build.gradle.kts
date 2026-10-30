@@ -38,11 +38,40 @@ android {
       if (!ksFile.exists()) {
         val base64File = file("${rootDir}/debug.keystore.base64")
         if (base64File.exists()) {
-          val bytes = Base64.getDecoder().decode(base64File.readText().trim())
-          ksFile.writeBytes(bytes)
+          try {
+            val bytes = Base64.getDecoder().decode(base64File.readText().trim())
+            ksFile.writeBytes(bytes)
+          } catch (e: Exception) {
+            // ignore
+          }
         }
       }
-      storeFile = ksFile
+      if (!ksFile.exists()) {
+        val userHomeKeystore = file("${System.getProperty("user.home")}/.android/debug.keystore")
+        if (userHomeKeystore.exists()) {
+          storeFile = userHomeKeystore
+        } else {
+          try {
+            ksFile.parentFile?.mkdirs()
+            ProcessBuilder(
+              "keytool", "-genkeypair",
+              "-alias", "androiddebugkey",
+              "-keypass", "android",
+              "-keystore", ksFile.absolutePath,
+              "-storepass", "android",
+              "-dname", "CN=Android Debug,O=Android,C=US",
+              "-keyalg", "RSA",
+              "-keysize", "2048",
+              "-validity", "10000"
+            ).redirectErrorStream(true).start().waitFor()
+          } catch (e: Exception) {
+            // ignore
+          }
+          storeFile = if (ksFile.exists()) ksFile else userHomeKeystore
+        }
+      } else {
+        storeFile = ksFile
+      }
       storePassword = "android"
       keyAlias = "androiddebugkey"
       keyPassword = "android"
