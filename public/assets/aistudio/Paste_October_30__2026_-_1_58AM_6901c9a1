@@ -1,0 +1,975 @@
+MASTER PROMPT — COMPLETE REPAIR, DEVELOPMENT & UI/UX REDESIGN
+
+Application: لسه فاكرني؟ (Lessa Fakerny)
+
+Act as a senior Android application engineer, software architect, UI/UX designer, database engineer, and notification-system specialist.
+
+Your task is to inspect, repair, improve, and complete my EXISTING university lecture and exam reminder application.
+
+This is an existing project that already contains an implementation of the application, but some features, interactions, and visual elements may be incorrect or incomplete.
+
+Do not create a separate application.
+
+Do not replace the existing project with a simplified demo.
+
+Do not assume that the existing code is correct.
+
+Inspect the entire codebase, identify the actual implementation and its problems, and make the necessary corrections directly in the project.
+
+The application must remain a practical university assistant that helps students manage lectures, track attendance, monitor remaining lecture time, organize exams, and receive reliable reminders.
+
+The visual identity must be inspired by the supplied application icon.
+
+The final application must be beautiful, modern, reliable, fully functional, and suitable for everyday use on Android devices.
+
+IMPORTANT: Prioritize correctness and reliability over unnecessary visual effects.
+
+==================================================
+
+1. UNDERSTAND THE APPLICATION BEFORE MODIFYING IT
+   ==================================================
+
+Before writing or changing code:
+
+1. Inspect the entire project structure.
+2. Identify the actual framework, programming language, and build system.
+3. Identify every screen, component, navigation route, and existing feature.
+4. Inspect the database or local storage implementation.
+5. Inspect how lectures and exams are created, edited, and deleted.
+6. Inspect the current countdown implementation.
+7. Inspect attendance tracking.
+8. Inspect notification scheduling and Android notification permissions.
+9. Inspect the current settings and theme implementation.
+10. Identify broken interactions, incorrect calculations, duplicated logic, and missing functionality.
+
+Create an internal implementation checklist and work through it systematically.
+
+Do not stop after analyzing the project.
+
+Do not return a list of recommendations instead of making changes.
+
+Implement the fixes directly in the existing codebase.
+
+Preserve all existing working functionality and user data.
+
+If the current architecture is unsuitable for a particular feature, improve it carefully without unnecessarily rewriting the entire application.
+
+Never claim a feature works unless its implementation has been verified.
+
+==================================================
+2. APPLICATION STRUCTURE AND NAVIGATION
+
+The application has four primary sections.
+
+SECTION 1: HOME
+The home screen displays today's lectures, their current status, the next upcoming lecture, countdown information, and attendance controls.
+
+SECTION 2: LECTURE TIMETABLE
+A dedicated section for managing the student's weekly university lecture schedule.
+
+SECTION 3: EXAMS
+A dedicated section for adding, editing, viewing, and organizing upcoming examinations.
+
+SECTION 4: SETTINGS
+A dedicated section for appearance, notifications, preferences, and other application settings.
+
+The application also has an initial splash screen.
+
+Maintain this structure unless the existing project requires a small, justified adjustment.
+
+Use clear Arabic labels and a consistent navigation system.
+
+The user must be able to move between the four main sections without losing information or experiencing unnecessary loading.
+
+The selected navigation item must be visually obvious.
+
+Use proper Android system insets, status bar handling, and navigation bar handling.
+
+All screens must support Arabic RTL layout correctly.
+
+==================================================
+3. SPLASH SCREEN
+
+Create an elegant splash screen that matches the supplied application icon.
+
+Brand identity:
+"لسه فاكرني؟"
+
+Visual direction:
+
+- Deep navy background.
+- Electric cyan and blue highlights.
+- Violet and magenta accents.
+- Subtle futuristic clock-inspired details.
+- Restrained ambient glow.
+- Premium, clean composition.
+
+Use the actual application icon asset if it exists in the project.
+
+Do not generate a replacement logo or distort the original Arabic lettering.
+
+Keep the splash screen short and purposeful.
+
+Initialize only the services needed for application startup.
+
+Avoid blocking the user unnecessarily while loading nonessential information.
+
+Handle initialization errors gracefully.
+
+After initialization, navigate to the home screen.
+
+Do not repeatedly display the splash screen during ordinary navigation between sections.
+
+==================================================
+4. HOME SCREEN — TODAY'S LECTURES
+
+This is the most important screen in the application.
+
+Its main purpose is to answer four questions immediately:
+
+1. What lectures do I have today?
+2. When does each lecture start?
+3. Is a lecture currently in progress?
+4. Have I attended or missed the lecture?
+
+The screen must display the correct lectures for the current date and the user's configured weekly schedule.
+
+Each lecture card should contain:
+
+- Lecture name.
+- Subject or course name, if available.
+- Start time.
+- End time.
+- Location or classroom, if available.
+- Current status.
+- Attendance status, when applicable.
+- Remaining time or time until the lecture.
+
+Possible lecture states:
+
+A. UPCOMING
+The lecture has not started.
+
+Show the start time and a countdown when appropriate.
+
+B. IN PROGRESS
+The current time falls between the lecture's start and end times.
+
+Clearly highlight the active lecture.
+
+Display the remaining lecture time.
+
+Show the attendance controls when attendance can still be recorded.
+
+C. COMPLETED
+The scheduled end time has passed.
+
+Show the appropriate completion state and the recorded attendance result, if one exists.
+
+D. MISSED
+The lecture ended without attendance being recorded, according to the attendance rules defined below.
+
+Clearly distinguish this from a lecture that the student attended.
+
+E. CANCELLED
+If lecture cancellation is supported by the existing project, ensure cancelled lectures do not trigger ordinary attendance warnings or start reminders.
+
+Do not invent a cancellation feature if it is not supported and there is no reasonable way to implement it within the current architecture.
+
+Sort today's lectures chronologically.
+
+Do not display yesterday's lectures as today's lectures.
+
+Handle dates correctly when the week changes or the calendar crosses into a new month or year.
+
+If there are no lectures today, display an attractive Arabic empty state.
+
+Example:
+"مفيش محاضرات عندك النهارده 🎉"
+
+Provide an appropriate action to view or manage the timetable.
+
+Do not fill the home screen with fake lecture data.
+
+==================================================
+5. ACTIVE LECTURE COUNTDOWN
+
+Implement a reliable countdown system.
+
+For an upcoming lecture:
+Calculate the time remaining until the scheduled start.
+
+For an active lecture:
+Calculate the time remaining until the scheduled end.
+
+Use the actual start and end timestamps, not a hardcoded duration.
+
+For example, if a lecture runs from 10:00 AM to 11:30 AM and the current time is 10:40 AM, display:
+
+"المتبقي على نهاية المحاضرة"
+"50 دقيقة"
+
+The display may use hours, minutes, and seconds when appropriate.
+
+The countdown must:
+
+- Update automatically.
+- Remain accurate when the application returns from the background.
+- Recalculate after the device clock changes.
+- Recalculate after the time zone changes.
+- Stop displaying an active state after the lecture ends.
+- Handle app suspension and process recreation.
+- Avoid unnecessary continuous database writes.
+- Avoid consuming excessive battery.
+
+Do not rely on an animation counter as the source of truth.
+
+Use the actual system time and scheduled timestamps.
+
+Recalculate from the current time rather than subtracting one second indefinitely.
+
+If the application is reopened halfway through a lecture, it must display the correct remaining time immediately.
+
+If multiple lectures overlap, do not silently choose an arbitrary active lecture.
+
+Handle overlapping schedules gracefully and make the relevant lecture information accessible.
+
+==================================================
+6. ATTENDANCE SYSTEM — PRESENT OR ABSENT
+
+Attendance is a core application feature.
+
+Implement a clear attendance interaction.
+
+The student must be able to indicate whether they attended a lecture.
+
+The primary control may say:
+
+"أنا حضرت"
+
+After the student confirms attendance, save the attendance record and visibly update the lecture card.
+
+Display:
+
+"حاضر ✓"
+
+Provide clear feedback that the action was saved.
+
+Avoid repeatedly recording the same attendance action.
+
+The attendance system must support these logical states:
+
+- Not recorded.
+- Present.
+- Absent.
+- Excused, only if supported or explicitly implemented.
+
+The application must distinguish attendance from lecture completion.
+
+A student may attend a lecture and leave before it ends; the attendance record should not automatically change simply because the countdown finishes.
+
+Attendance should be stored against the specific scheduled occurrence of the lecture, not just the recurring weekly lecture template.
+
+For example, attending Monday's lecture must not automatically mark the following Monday's lecture as attended.
+
+Use a stable identifier for each scheduled occurrence, derived from the recurring lecture ID and the actual lecture date or from an equivalent reliable database record.
+
+IMPORTANT ATTENDANCE RULES:
+
+1. Do not mark a student present merely because the application is open.
+2. Do not automatically mark every lecture as absent when it ends without considering the configured attendance rules.
+3. Do not overwrite a confirmed attendance record without a deliberate user action.
+4. If the user misses a lecture, provide an appropriate way to record or confirm absence.
+5. If automatic missed-lecture detection is implemented, clearly define when it takes effect.
+6. Handle lectures that finish while the application is closed.
+7. Preserve historical attendance records.
+8. Do not confuse an unrecorded lecture with a confirmed absence.
+
+If the existing implementation already has attendance rules, inspect them and correct their problems while preserving the intended behavior.
+
+Where the intended behavior is ambiguous, choose the least destructive option and explain the implemented rule.
+
+==================================================
+7. WEEKLY LECTURE TIMETABLE
+
+The second main section manages the student's weekly university schedule.
+
+The user must be able to add, view, edit, and delete lectures.
+
+Each lecture should support the following information where appropriate:
+
+- Lecture name.
+- Course or subject.
+- Day of the week.
+- Start time.
+- End time.
+- Building, room, or classroom.
+- Lecturer name, if useful.
+- Optional notes.
+- Reminder preferences.
+- Whether the lecture is enabled.
+
+The user should be able to add multiple lectures on the same day.
+
+Support multiple lectures with different times and subjects.
+
+Validate the start and end times.
+
+Reject invalid time ranges and explain the problem clearly.
+
+Warn about overlapping lectures, but do not automatically delete or modify either lecture.
+
+If a lecture is intentionally scheduled across midnight, handle it correctly rather than incorrectly rejecting it.
+
+Support editing existing lectures without duplicating them.
+
+Support deleting lectures with a clear confirmation dialog.
+
+Deleting a recurring lecture must not accidentally delete unrelated lecture records or examination data.
+
+When a lecture is edited, update its future reminders.
+
+Do not erase historical attendance records when a recurring lecture is edited or removed.
+
+The weekly timetable should visually distinguish days, lecture times, and available actions.
+
+Provide a practical mobile-friendly layout rather than forcing a wide desktop-style table onto a phone screen.
+
+Use a day selector, vertical timeline, or another layout appropriate to the existing architecture.
+
+All lecture times must be stored and interpreted consistently.
+
+==================================================
+8. EXAM MANAGEMENT
+
+The third main section manages examinations.
+
+Allow the user to create, edit, view, and delete exams.
+
+Each exam should support:
+
+- Exam name.
+- Subject.
+- Date.
+- Start time, if applicable.
+- End time or duration, if applicable.
+- Exam location, if available.
+- Notes.
+- Reminder preferences.
+
+Display upcoming examinations in chronological order.
+
+Highlight exams that are approaching.
+
+Show the time remaining until the next exam.
+
+If an exam has passed, do not continue displaying it as an upcoming examination.
+
+Preserve past examination information if the application already maintains a history.
+
+Validate examination dates and times.
+
+Provide clear empty states and useful confirmation messages.
+
+The exam reminder system must be separate from ordinary lecture reminders so that editing or deleting an exam cannot accidentally modify lecture notifications.
+
+==================================================
+9. NOTIFICATION SYSTEM — CRITICAL REQUIREMENT
+
+Notifications are a critical feature.
+
+Do not treat them as decorative UI elements.
+
+Implement actual Android notifications using the appropriate APIs and the project's existing architecture.
+
+First inspect whether the application uses native Android, Flutter, React Native, or another framework.
+
+Use the correct notification implementation for the detected technology.
+
+Do not add a second competing notification system without a technical reason.
+
+The notification system must work as reliably as the platform and available permissions allow.
+
+A. DEFAULT LECTURE REMINDER SCHEDULE
+
+Use these sensible default reminders before each lecture:
+
+- 30 minutes before: an early reminder.
+- 15 minutes before: a preparation reminder.
+- 5 minutes before: a final reminder.
+
+These are the default preferences for a newly configured lecture.
+
+If a lecture is shorter than a reminder interval, skip reminder times that fall before the lecture was created or are otherwise no longer useful.
+
+If a reminder time has already passed, do not send that reminder retroactively.
+
+Provide user-configurable reminder preferences in the application settings or lecture configuration.
+
+Allow users to disable individual reminder intervals.
+
+The default schedule should be practical and must not overwhelm the student.
+
+B. NOTIFICATION CONTENT
+
+Use clear, concise Arabic notifications.
+
+Examples:
+
+30 minutes before:
+Title: "محاضرتك قربت 📚"
+Body: "فاضل 30 دقيقة على محاضرة [اسم المحاضرة]. جهّز نفسك!"
+
+15 minutes before:
+Title: "استعد للمحاضرة ⏰"
+Body: "محاضرة [اسم المحاضرة] هتبدأ كمان 15 دقيقة."
+
+5 minutes before:
+Title: "ميعاد المحاضرة دلوقتي قرب 📍"
+Body: "فاضل 5 دقايق على [اسم المحاضرة]. متتأخرش!"
+
+At lecture start:
+Title: "المحاضرة بدأت 🎓"
+Body: "ميعاد محاضرة [اسم المحاضرة] بدأ. لو وصلت، سجّل حضورك."
+
+The start notification should be an optional setting enabled by default only if the implementation can schedule it reliably without creating excessive notifications.
+
+Do not send a start notification if it is already too late to be useful.
+
+Use the actual lecture name and scheduled start time.
+
+Never display unresolved template placeholders to the user.
+
+C. NOTIFICATION ACTIONS
+
+Where supported, tapping a lecture notification should open the correct lecture or the home screen with the relevant lecture highlighted.
+
+If the application supports notification actions, provide useful actions only when they can be implemented reliably.
+
+Do not mark a student present simply because they tapped a notification.
+
+Attendance must require an explicit attendance action.
+
+D. UNIQUE NOTIFICATION IDENTIFIERS
+
+Each scheduled notification must be associated with a stable, unique identifier.
+
+Do not reuse the same notification identifier for unrelated lectures.
+
+Editing a lecture must cancel its outdated future notifications and schedule replacements.
+
+Deleting a lecture must cancel its pending notifications.
+
+Deleting an exam must cancel its pending exam reminders.
+
+Changing a reminder preference must update the relevant scheduled notifications.
+
+Prevent duplicate notifications when the application starts multiple times.
+
+Do not schedule duplicate notifications every time the user opens the home screen.
+
+E. DEVICE RESTART AND APP REOPENING
+
+Inspect how the current notification system handles:
+
+- Device restart.
+- Application process termination.
+- Application updates.
+- Time zone changes.
+- Date changes.
+- Edited schedules.
+- Disabled notifications.
+- Revoked permissions.
+
+Rebuild or reconcile scheduled reminders when necessary using the appropriate platform-supported mechanism.
+
+Use persistent lecture data as the source of truth.
+
+Do not assume that in-memory timers survive application termination.
+
+F. ANDROID PERMISSIONS AND PLATFORM LIMITATIONS
+
+Handle notification permissions correctly for the device's Android version.
+
+If exact alarms are required, inspect the Android version, application requirements, and applicable platform restrictions before implementing them.
+
+Request only permissions that are actually necessary.
+
+Explain permission requests in clear Arabic.
+
+If notification permission is denied, show an appropriate message and guide the user to the relevant settings when possible.
+
+Do not claim that reminders are guaranteed when the operating system or missing permissions prevent reliable delivery.
+
+Use the most reliable supported scheduling mechanism for the project's requirements.
+
+Do not use a continuously running background timer as a substitute for proper scheduled notifications.
+
+G. NOTIFICATION CHANNELS
+
+Create appropriate Android notification channels.
+
+Suggested channels:
+
+1. "تذكير المحاضرات"
+2. "تذكير الامتحانات"
+3. "تنبيهات التطبيق"
+
+Use clear Arabic names and descriptions.
+
+Choose appropriate importance levels.
+
+Lecture and exam reminders should be noticeable without producing unnecessary noise.
+
+Respect user-controlled notification settings and Android channel settings.
+
+H. TIME CALCULATIONS
+
+Calculate reminder timestamps from the actual scheduled lecture occurrence.
+
+For a lecture scheduled at 10:00 AM:
+
+- 9:30 AM: 30-minute reminder.
+- 9:45 AM: 15-minute reminder.
+- 9:55 AM: 5-minute reminder.
+- 10:00 AM: optional start notification.
+
+If the user creates the lecture at 9:50 AM, do not schedule notifications for 9:30 AM or 9:45 AM.
+
+Only schedule useful future reminders.
+
+Handle weekly recurring lectures correctly.
+
+Each week's lecture occurrence must have its own correct reminder schedule.
+
+When daylight-saving rules or time-zone changes apply, use proper local date and time handling.
+
+I. EXAM NOTIFICATIONS
+
+Use sensible defaults for examinations:
+
+- One day before.
+- Two hours before.
+- Thirty minutes before.
+
+Allow the user to customize or disable these reminders.
+
+Skip reminders that would occur in the past.
+
+Avoid duplicate exam notifications.
+
+Use separate identifiers and appropriate notification channels.
+
+J. NOTIFICATION TESTING
+
+Verify the scheduling logic for:
+
+- A newly added lecture.
+- A newly added exam.
+- Editing a lecture.
+- Editing an exam.
+- Deleting a lecture.
+- Deleting an exam.
+- Changing reminder preferences.
+- Denied notification permission.
+- Reopening the application.
+- Restarting the device, where practical.
+- Lectures scheduled for the same day.
+- Multiple lectures on different days.
+- Lectures that overlap.
+- Reminder times that have already passed.
+
+Do not declare notifications complete merely because a test notification appears while the application is open.
+
+==================================================
+10. SETTINGS SCREEN
+
+Create a polished settings interface that includes the application's actual supported settings.
+
+Organize settings into logical sections.
+
+A. Appearance
+
+- Dark theme.
+- Light theme, if supported.
+- System theme, if supported.
+
+B. Notifications
+
+- Enable or disable lecture reminders.
+- Enable or disable exam reminders.
+- Configure 30-minute reminders.
+- Configure 15-minute reminders.
+- Configure 5-minute reminders.
+- Configure lecture-start reminders.
+- Configure 24-hour exam reminders.
+- Configure two-hour exam reminders.
+- Configure 30-minute exam reminders.
+
+C. Preferences
+
+- Language, if multilingual support exists.
+- Time display format, if supported.
+- Other existing preferences.
+
+D. Data and Privacy
+
+- Clear or reset data only with explicit confirmation.
+- Preserve user data by default.
+- Explain destructive operations clearly.
+
+E. About
+
+- Application name.
+- Version information, where available.
+- Relevant project information.
+
+Do not invent nonfunctional settings.
+
+Every displayed switch must be connected to actual application state and behavior.
+
+Settings must persist after the application is closed and reopened.
+
+When a reminder setting changes, reconcile the relevant scheduled notifications.
+
+If a setting depends on an Android permission, clearly distinguish the app preference from the operating-system permission.
+
+==================================================
+11. VISUAL IDENTITY — MATCH THE SUPPLIED ICON
+
+Transform the interface into a premium, futuristic academic application.
+
+The supplied icon is the visual reference.
+
+Use its identity consistently across every screen.
+
+CORE COLORS
+
+Primary background:
+#050816
+
+Secondary background:
+#080D20
+
+Card surface:
+#101A35
+
+Elevated surface:
+#141D3B
+
+Electric cyan:
+#00E5FF
+
+Electric blue:
+#287BFF
+
+Violet:
+#8B5CF6
+
+Magenta:
+#FF45D4
+
+Primary text:
+#F8FAFF
+
+Secondary text:
+#A7B2D0
+
+Muted text:
+#73809F
+
+Success:
+#35D6A0
+
+Warning:
+#FFCA70
+
+Error:
+#FF647C
+
+Use dark navy as the dominant background.
+
+Use cyan and blue for active states, countdown indicators, primary actions, and important information.
+
+Use violet and magenta sparingly for accent lighting.
+
+Use subtle glassmorphism, restrained gradients, elegant rounded cards, and carefully controlled shadows.
+
+The interface should feel modern and premium rather than excessively futuristic.
+
+Avoid:
+
+- Excessive neon glow.
+- Bright outlines on every component.
+- Too many competing colors.
+- Oversized decorative illustrations.
+- Excessive blur.
+- Unreadable low-contrast text.
+- Generic dashboard templates.
+- Unnecessary animations.
+
+Use a clean Arabic font such as IBM Plex Sans Arabic, Tajawal, or Cairo, depending on project compatibility.
+
+Support RTL layout correctly.
+
+Use real Arabic text rather than generating text inside images.
+
+Keep the icon's original visual identity intact.
+
+==================================================
+12. SCREEN-SPECIFIC DESIGN
+
+HOME:
+A clear dashboard with today's lectures, the active lecture countdown, attendance controls, and the next upcoming event.
+
+TIMETABLE:
+An organized weekly schedule with clear day selection, readable lecture times, and accessible editing controls.
+
+EXAMS:
+A clean exam list with upcoming dates, time remaining, and appropriate reminders.
+
+SETTINGS:
+An elegant categorized settings screen with functional controls.
+
+SPLASH:
+A short branded entry experience using the existing application icon.
+
+FOR ALL SCREENS:
+
+- Maintain consistent margins and spacing.
+- Use reusable components.
+- Keep text readable.
+- Make actions obvious.
+- Use the same iconography.
+- Maintain proper RTL behavior.
+- Provide loading, empty, success, and error states.
+- Prevent clipping and overlapping.
+- Ensure all controls work.
+
+Do not redesign the home screen while leaving the other screens in their old visual style.
+
+==================================================
+13. DATA MODEL AND STORAGE
+
+Inspect the existing data model before modifying it.
+
+The application must reliably represent:
+
+Recurring lecture templates.
+Individual lecture occurrences.
+Attendance records.
+Exam records.
+Reminder preferences.
+Application settings.
+
+Separate recurring timetable definitions from individual attendance records.
+
+For example, the weekly Monday lecture is a recurring schedule, but the lecture occurring on Monday, November 2, is a specific occurrence with its own attendance status.
+
+Do not mark future lecture occurrences as attended because an earlier occurrence was attended.
+
+Use stable identifiers.
+
+Preserve existing data and migrate it safely if the schema needs to change.
+
+Do not delete the existing database just to simplify the implementation.
+
+Do not silently reset user settings.
+
+If a migration is required, implement and verify it appropriately for the actual storage technology.
+
+==================================================
+14. DATE, TIME, AND CALENDAR CORRECTNESS
+
+Correct date and time calculations are essential.
+
+Use reliable date-time APIs appropriate to the project's language and framework.
+
+Do not compare formatted time strings to determine whether a lecture is active.
+
+Do not rely on device-independent hardcoded UTC offsets.
+
+Use the appropriate local time zone.
+
+Handle:
+
+- Day transitions.
+- Week transitions.
+- Month transitions.
+- Year transitions.
+- Time-zone changes.
+- Daylight-saving changes where applicable.
+- Application suspension.
+- Device restart.
+- Past and future lecture occurrences.
+
+The active lecture is determined by:
+
+start timestamp <= current timestamp < end timestamp
+
+Use the correct scheduled occurrence.
+
+Do not treat a lecture as active before its start or after its end.
+
+Handle overlapping lectures explicitly.
+
+If the timetable contains conflicting lecture times, show a clear warning without corrupting the schedule.
+
+==================================================
+15. PERFORMANCE AND CODE QUALITY
+
+Preserve the project's actual technology stack.
+
+Do not assume a framework before inspecting the code.
+
+Use maintainable architecture and reusable components.
+
+Avoid unnecessary dependencies.
+
+Avoid duplicating date calculations in multiple screens.
+
+Centralize scheduling and cancellation logic where appropriate.
+
+Keep UI components separate from data persistence and notification logic.
+
+Use reliable state management appropriate to the existing project.
+
+Prevent duplicate event handlers and duplicate scheduled notifications.
+
+Avoid unnecessary database writes every second.
+
+Optimize list rendering and image assets.
+
+Keep animations lightweight.
+
+Do not introduce placeholder functionality.
+
+Do not leave critical operations as TODO comments.
+
+Do not conceal errors with empty catch blocks.
+
+Use appropriate error handling and useful user feedback.
+
+==================================================
+16. TESTING AND ACCEPTANCE CHECKLIST
+
+After implementation, verify the following.
+
+HOME SCREEN:
+
+- Today's lectures are correct.
+- Upcoming lectures are sorted correctly.
+- The active lecture is identified correctly.
+- The countdown shows the correct remaining time.
+- Attendance can be recorded.
+- Attendance persists after reopening the app.
+- Completed lectures do not remain active.
+- Empty states work correctly.
+
+TIMETABLE:
+
+- Lectures can be created.
+- Lectures can be edited.
+- Lectures can be deleted.
+- Multiple lectures per day work.
+- Time validation works.
+- Overlapping lectures are handled.
+- Historical attendance is preserved.
+
+EXAMS:
+
+- Exams can be created.
+- Exams can be edited.
+- Exams can be deleted.
+- Upcoming exams are sorted correctly.
+- Exam countdowns are accurate.
+- Exam reminders are independent of lecture reminders.
+
+NOTIFICATIONS:
+
+- Default reminders are scheduled correctly.
+- Past reminders are skipped.
+- Duplicate reminders are prevented.
+- Editing a schedule updates reminders.
+- Deleting an event cancels its reminders.
+- Settings control the actual notification behavior.
+- Permissions are handled correctly.
+- Scheduled reminders are reconciled after application restart.
+- Notification taps navigate to the correct destination when supported.
+
+DESIGN:
+
+- All screens share the same visual identity.
+- Arabic RTL is correct.
+- No text is clipped.
+- No buttons overlap.
+- No content is hidden behind system bars.
+- Small screens remain usable.
+- Theme settings work correctly where supported.
+
+TECHNICAL:
+
+- The project builds successfully.
+- No new critical runtime errors are introduced.
+- Existing tests continue to pass.
+- New tests cover important date, attendance, and reminder logic where practical.
+
+Run the available build and test commands.
+
+Fix issues discovered during verification.
+
+Clearly report any checks that could not be executed.
+
+Never claim that a test passed unless it actually ran successfully.
+
+==================================================
+17. IMPLEMENTATION WORKFLOW
+
+Work in the following order:
+
+PHASE 1:
+Inspect the project and identify actual errors, missing functionality, and architectural constraints.
+
+PHASE 2:
+Fix critical date, time, attendance, and data-persistence problems.
+
+PHASE 3:
+Repair the notification scheduling system and permission handling.
+
+PHASE 4:
+Correct navigation and interactions across the four main sections.
+
+PHASE 5:
+Implement the application-wide visual design system inspired by the supplied icon.
+
+PHASE 6:
+Redesign all existing screens using reusable components.
+
+PHASE 7:
+Test the full user journey and correct regressions.
+
+PHASE 8:
+Provide a concise report identifying:
+
+- What was broken.
+- What was fixed.
+- Which files were modified.
+- Which features were verified.
+- Which tests were executed.
+- Any remaining limitations or required manual steps.
+
+Do not stop after generating a plan.
+
+Do not merely describe code that should be written.
+
+Make actual changes to the existing project.
+
+If a task cannot be completed because of a missing service, unavailable permission, or an architectural limitation, explain the exact blocker and implement the safest available alternative.
+
+FINAL OBJECTIVE:
+
+Deliver a reliable, elegant, fully functional university lecture and exam reminder application called "لسه فاكرني؟", with a coherent premium neon identity, accurate lecture countdowns, explicit attendance tracking, a complete weekly timetable, exam management, persistent settings, and a carefully engineered notification system.
+
+Preserve the existing application and improve it systematically.
+
+Functionality, correctness, data integrity, and reliable reminders are mandatory. Visual polish must enhance these qualities, never replace them.

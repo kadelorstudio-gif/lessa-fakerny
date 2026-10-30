@@ -1,0 +1,1098 @@
+MASTER DEVELOPMENT PROMPT — LESSA FAKERNI?
+
+Complete UI Redesign, Bug Fixes, Real Notifications, Localization, Data Cleanup, Authentication & Firebase Sync
+
+Act as a senior Android application engineer, software architect, UI/UX designer, and quality assurance engineer.
+
+Your task is to inspect, repair, complete, and professionally modernize my EXISTING application named "لسه فاكرني؟" (Lessa Fakerny?).
+
+This is an existing project, not a request to create a separate app from scratch.
+
+The current application has UI problems, incomplete functionality, broken language switching, incorrect navigation, potentially fake sample data, and an outdated Android appearance. I want you to fix the existing implementation while preserving working functionality, real user data, local storage, authentication, and Firebase synchronization.
+
+Do not merely describe what should be done. Inspect the project files, identify the actual problems, implement the fixes, and verify the result.
+
+---
+
+1. FIRST: INSPECT THE EXISTING PROJECT
+
+Before making changes:
+
+1. Inspect the project structure, framework, dependencies, application entry point, navigation, screens, components, data models, local storage, authentication, Firebase configuration, and notification implementation.
+2. Identify the actual root causes of existing bugs.
+3. Reuse the current architecture and dependencies whenever practical.
+4. Fix existing components instead of creating unnecessary duplicate screens, services, or data models.
+5. Preserve working features and existing authentication and synchronization logic.
+6. Do not migrate to a different framework unless absolutely necessary and justified.
+7. Do not remove existing functionality just to make the implementation easier.
+8. Do not replace working application logic with mockups, hardcoded examples, or placeholder functions.
+9. Do not claim that a feature works unless you have implemented and verified it to the extent possible in this environment.
+
+After inspection, implement the changes in a logical order, resolve related bugs together, and ensure the application remains consistent throughout.
+
+---
+
+2. APPLICATION IDENTITY AND VISUAL DESIGN
+
+The app name is:
+
+لسه فاكرني؟
+
+Use the existing app icon as the primary visual reference.
+
+Design direction
+
+Create a polished, futuristic, youthful, premium interface inspired by the icon's visual identity.
+
+Use a coordinated visual language featuring:
+
+- Deep navy and almost-black backgrounds.
+- Electric blue and cyan highlights.
+- Violet and magenta accent lighting.
+- Subtle gradients.
+- Soft neon glows.
+- Carefully controlled glass-like surfaces where appropriate.
+- Rounded cards and modern buttons.
+- Clear typography and comfortable spacing.
+- Subtle, smooth transitions.
+- Elegant icons and consistent component sizes.
+- Excellent readability in both light and dark modes.
+
+Use colors inspired by the following palette:
+
+- Deep navy: "#080B18"
+- Dark surface: "#10152A"
+- Electric blue: "#3B82F6"
+- Cyan: "#22D3EE"
+- Violet: "#8B5CF6"
+- Magenta: "#D946EF"
+- White: "#F8FAFC"
+- Gold accent, used sparingly: "#FFD700"
+
+These are design references, not a requirement to use every color in every component.
+
+Important visual requirements
+
+- The entire application must follow one consistent design system.
+- Make the interface feel like a modern, professionally designed Android app, not an old Android template.
+- Improve the splash screen, home screen, lecture timetable, exam timetable, forms, dialogs, navigation, settings, notification-related screens, and empty states.
+- Use clear visual hierarchy and meaningful spacing.
+- Make touch targets comfortable and accessible.
+- Prevent clipped text, overflowing cards, overlapping buttons, and broken layouts.
+- Handle small and large phone screens correctly.
+- Ensure Arabic text and mixed Arabic/English content display correctly.
+- Avoid excessive glow, unnecessary animations, visual clutter, and distracting gradients.
+- Do not use emoji as substitutes for proper interface icons.
+- Keep all important controls easy to find.
+- Use consistent loading states, error states, confirmation dialogs, and success feedback.
+
+Do not redesign only the splash screen. Modernize the entire application.
+
+---
+
+3. SPLASH SCREEN
+
+Replace the outdated splash experience with a modern splash screen matching the application icon and visual identity.
+
+Requirements:
+
+1. Display the existing application icon prominently and at the correct aspect ratio.
+2. Use a deep navy background with subtle blue, cyan, or violet lighting.
+3. Display the app name "لسه فاكرني؟" elegantly.
+4. Use a restrained fade-in, subtle scale transition, or gentle glow if supported by the current framework.
+5. Remove the old-style progress bar.
+6. Remove the spinning circle surrounding the icon.
+7. Do not show unnecessary loading indicators or decorative elements that resemble outdated Android interfaces.
+8. Avoid arbitrary delays that make the app feel slow.
+9. Use the appropriate native Android splash mechanism if this project is a native Android application or supports it.
+10. Avoid showing two consecutive splash screens.
+11. Respect the current authentication and initialization flow.
+12. Navigate to the correct destination when initialization finishes.
+
+Critical navigation rule: After the splash screen, the normal destination must be the Home screen, not the Add Lecture form.
+
+Do not send a user to the Add Lecture form automatically unless they explicitly tap an Add Lecture button.
+
+---
+
+4. EXACTLY FOUR PRIMARY SECTIONS
+
+The application must have exactly four primary sections:
+
+1. الرئيسية — Home
+2. جدول المحاضرات — Lecture Timetable
+3. جدول الامتحانات — Exam Timetable
+4. الإعدادات — Settings
+
+Use a modern bottom navigation bar or another appropriate navigation pattern consistent with the existing project.
+
+The four primary sections must be easy to access, clearly labeled, and visually consistent.
+
+Do not turn Add Lecture, Add Exam, or other forms into additional primary navigation sections.
+
+Fix the existing navigation logic so that:
+
+- The app opens the Home screen after the splash screen and required initialization.
+- Tapping each navigation item opens the correct screen.
+- Changing language does not send the user to the wrong page.
+- Returning from a form returns the user to the appropriate previous screen.
+- Editing or deleting a record does not unexpectedly reset navigation.
+- The selected navigation item remains visually accurate.
+- Back-button behavior is sensible and consistent.
+- Navigation state does not create duplicate screens or unexpected loops.
+
+---
+
+5. HOME SCREEN — الرئيسية
+
+The Home screen is the main dashboard and must be the default destination after the splash screen.
+
+Design it as a personalized university dashboard.
+
+A. Header
+
+Include:
+
+- A welcoming, concise heading.
+- The app identity.
+- Today's date, localized according to the selected language.
+- A clear visual summary of today's academic schedule.
+
+Avoid unnecessary decorative elements.
+
+B. Today's lectures
+
+Display the lectures scheduled for the current day in chronological order.
+
+Each lecture card should show the relevant information, such as:
+
+- Lecture name.
+- Subject or course name, if available.
+- Start time.
+- End time.
+- Location or lecture hall, if provided.
+- Attendance status.
+- Time remaining until the lecture starts or ends, when applicable.
+
+Use clear status indicators such as:
+
+- Upcoming.
+- In progress.
+- Completed.
+- Attended.
+- Missed, only if the app has sufficient information to determine this reliably.
+
+Do not label a lecture as missed merely because the app was closed or attendance was not recorded.
+
+C. Next lecture countdown
+
+If a future lecture exists, prominently display the next lecture and a live countdown until its start.
+
+The countdown must update correctly without requiring the user to reopen the screen.
+
+Handle app backgrounding, resuming, time changes, and day transitions correctly.
+
+Do not display a countdown to an already-ended lecture.
+
+D. Currently active lecture
+
+If a lecture is currently in progress, show its remaining duration until the scheduled end time.
+
+For example, display the equivalent of:
+
+"الوقت المتبقي لانتهاء المحاضرة: 25 دقيقة"
+
+The countdown must be calculated from the actual scheduled end time.
+
+If a lecture has ended, do not keep displaying it as active.
+
+If lectures overlap, handle them consistently without silently modifying their schedules.
+
+E. Attendance control
+
+Provide a clear button labeled:
+
+أنا حضرت
+
+When tapped:
+
+1. Record attendance for the correct lecture and date.
+2. Persist the attendance state locally.
+3. Reflect the change immediately in the UI.
+4. Prevent accidental duplicate attendance records.
+5. Preserve the attendance record when the app restarts.
+6. Synchronize attendance through the existing Firebase synchronization system when the authenticated user is eligible for synchronization.
+7. Provide appropriate feedback.
+8. If attendance can be reversed, require a clear and deliberate action and update the stored state consistently.
+
+Attendance must be tied to the appropriate lecture occurrence, not merely to the recurring lecture template.
+
+Do not automatically mark a lecture as attended.
+
+F. Empty state
+
+When there are no lectures scheduled for today, display an attractive empty state explaining that no lectures are scheduled.
+
+Provide a clear action to open the Lecture Timetable section and add a lecture.
+
+Do not display fake lectures to make the dashboard appear populated.
+
+G. Quick actions
+
+Provide appropriate shortcuts for adding a lecture or managing exams without creating extra primary navigation sections.
+
+Every shortcut must open the correct screen or form.
+
+---
+
+6. LECTURE TIMETABLE — جدول المحاضرات
+
+Implement a complete weekly recurring lecture timetable.
+
+This section is where users manage their university lectures.
+
+A. Weekly timetable
+
+Display the week in a clear, modern format.
+
+Support the appropriate weekdays used by the application.
+
+Allow the user to select a day and view its lectures in chronological order.
+
+Each lecture should display its relevant information clearly.
+
+If the existing project already has a working weekly timetable model, preserve and improve it instead of replacing it unnecessarily.
+
+B. Add lecture
+
+Adding a lecture must be an action inside the Lecture Timetable section, not a primary page and not the default app destination.
+
+Provide a well-designed form with suitable fields:
+
+- Lecture name.
+- Subject or course name, if applicable.
+- Day of the week.
+- Start time.
+- End time.
+- Location or lecture hall, optional.
+- Reminder settings.
+- Any other fields already supported by the existing application that are genuinely useful.
+
+Requirements:
+
+1. Validate required fields.
+2. Ensure the end time is later than the start time.
+3. Handle lectures crossing midnight only if the existing data model explicitly supports them.
+4. Preserve valid existing records.
+5. Prevent accidental duplicate creation.
+6. Save the lecture using the existing local persistence architecture.
+7. Integrate it with the existing Firebase sync system.
+8. Schedule the appropriate notifications after a successful save.
+9. Return to the appropriate timetable or previous screen after saving.
+10. Provide clear validation errors and success feedback.
+
+Do not save an invalid or partially completed form.
+
+C. Edit lecture
+
+Allow users to edit existing lectures.
+
+When editing:
+
+- Prepopulate the form with the actual saved values.
+- Preserve fields that were not changed.
+- Save changes correctly.
+- Update relevant notifications.
+- Synchronize the changes safely.
+- Preserve the lecture's stable identity.
+- Do not create a duplicate lecture simply because it was edited.
+
+D. Delete lecture
+
+Allow users to delete a lecture with a confirmation step.
+
+After deletion:
+
+- Remove the correct lecture record.
+- Cancel its pending notifications.
+- Update the timetable and Home screen.
+- Propagate the deletion through the existing synchronization system using a safe, supported mechanism.
+- Avoid leaving stale reminders or duplicate records.
+
+Do not delete other lectures, attendance records, or unrelated user data.
+
+E. Recurring lectures and attendance
+
+Distinguish between:
+
+- The recurring lecture definition.
+- An individual scheduled occurrence.
+- Attendance for that occurrence.
+
+Maintain this distinction if supported by the existing architecture, and implement it safely if the current model requires a compatible improvement.
+
+Do not let attendance on one day automatically mark all future occurrences as attended.
+
+---
+
+7. EXAM TIMETABLE — جدول الامتحانات
+
+Implement a complete exam-management section.
+
+Users must be able to add, view, edit, and delete exams.
+
+A. Exam list
+
+Display upcoming exams in chronological order.
+
+Each exam card should include relevant details, such as:
+
+- Exam name.
+- Subject.
+- Date.
+- Start time.
+- End time or duration, if applicable.
+- Location, if available.
+- Time remaining until the exam.
+- Reminder status.
+
+Show upcoming exams prominently.
+
+Handle past exams consistently and do not show them as upcoming.
+
+B. Add exam
+
+Provide a clear form with fields such as:
+
+- Exam name.
+- Subject.
+- Exam date.
+- Start time.
+- Optional end time or duration.
+- Optional location.
+- Reminder settings.
+
+Validate all required information and prevent invalid dates or times.
+
+C. Edit and delete exams
+
+Allow users to edit and delete exams.
+
+When an exam is edited:
+
+- Update its saved information.
+- Reschedule the associated notifications.
+- Preserve its stable identity.
+- Synchronize the update safely.
+
+When an exam is deleted:
+
+- Remove the correct exam.
+- Cancel associated pending notifications.
+- Update the interface.
+- Synchronize the deletion through the existing supported mechanism.
+
+D. Exam countdown
+
+Show a correct countdown until each upcoming exam.
+
+Update it when the date changes, the app resumes, or the user edits the exam.
+
+E. Empty state
+
+If no exams exist, show a modern empty state and a clear Add Exam action.
+
+Do not populate the exam list with sample records.
+
+---
+
+8. REAL ANDROID NOTIFICATIONS
+
+This is a critical requirement.
+
+Implement actual operating-system notifications using the notification system appropriate to the existing project and target platform.
+
+Do not simulate notifications with in-app banners, timers that only run while the app is open, or fake notification history.
+
+If the project is a web app or a cross-platform app, determine the capabilities of the existing runtime and implement genuine notifications wherever supported. Clearly identify any functionality that cannot work without a native Android layer or required platform configuration.
+
+A. Lecture reminders
+
+Provide configurable lecture reminders with these default offsets:
+
+- 30 minutes before.
+- 15 minutes before.
+- 5 minutes before.
+- At the start time, optionally enabled.
+
+Allow users to enable or disable individual reminders or configure suitable global defaults.
+
+Do not send reminders that have already expired.
+
+B. Exam reminders
+
+Provide configurable exam reminders with these default offsets:
+
+- 24 hours before.
+- 2 hours before.
+- 30 minutes before.
+
+Allow users to configure or disable these reminders.
+
+C. Notification content
+
+Notification content must reflect the selected application language.
+
+Lecture notifications should include relevant details, such as the lecture name and start time.
+
+Exam notifications should include the exam name, subject when available, and exam time.
+
+Use clear titles and concise messages.
+
+D. Reliable scheduling
+
+Implement the following correctly:
+
+- Unique, stable notification identifiers.
+- No duplicate notifications for the same event and reminder offset.
+- Correct handling of time zones and local date/time values.
+- Cancellation and rescheduling after edits.
+- Cancellation after deletions.
+- Correct behavior when a reminder is disabled.
+- Correct behavior when permissions are denied.
+- Reconciliation of pending notifications after app startup where supported.
+- Recovery or rescheduling after device reboot where required and supported.
+- Correct behavior when the app has been closed.
+- Appropriate Android notification permission handling for the supported Android versions.
+- Appropriate exact-alarm permissions or scheduling mechanisms when required.
+- Respect for system restrictions and battery-management behavior.
+
+Do not claim that delivery is guaranteed if Android restrictions or denied permissions can prevent it.
+
+Use stable identifiers so restarting the application does not create duplicate reminders.
+
+Do not schedule reminders for invalid or past events.
+
+If the existing project has a notification service, repair and reuse it where appropriate.
+
+E. Notification channels
+
+If the app uses Android notification channels:
+
+- Create appropriate channels with stable IDs.
+- Separate categories when needed, such as lectures and exams.
+- Configure channel importance and sound appropriately.
+- Respect Android's rules regarding channel settings.
+- Do not assume changing a sound preference automatically changes an already-created channel's sound.
+
+If a channel's sound cannot be changed programmatically after creation, implement an accurate user flow, explain the required Android system setting when necessary, or use a safe channel-management strategy that does not create uncontrolled duplicate channels.
+
+F. Notification interaction
+
+Tapping a notification should open the appropriate screen or event where supported.
+
+For a lecture reminder, open the relevant lecture or Home screen.
+
+For an exam reminder, open the relevant exam or Exam Timetable section.
+
+Do not send users to an unrelated page or the Add Lecture form.
+
+---
+
+9. NOTIFICATION SOUND SETTINGS
+
+Implement working notification sound settings inside Settings.
+
+Users should be able to configure lecture and exam notification sounds where the platform supports it.
+
+Required behavior:
+
+1. Display a clear selection interface.
+2. Offer available sounds or a sensible predefined selection.
+3. Allow users to preview a sound before choosing it.
+4. Persist the selected sound.
+5. Restore the saved selection after the app restarts.
+6. Apply the selected sound to newly scheduled notifications.
+7. Update existing notification configuration where technically supported.
+8. Provide a silent option.
+9. Keep notifications visible when silent mode is selected; silent must not mean disabling the notification entirely.
+10. Handle missing sound resources gracefully.
+11. Keep lecture and exam sound preferences separate if practical and compatible with the existing architecture.
+12. Respect system notification-channel restrictions.
+
+Do not build a fake sound selector that changes a label but does not affect actual notifications.
+
+If the platform requires a native implementation, implement it using the project's actual supported native architecture rather than pretending a web-only implementation can control all Android notification behavior.
+
+---
+
+10. SETTINGS — الإعدادات
+
+Create a complete, organized Settings screen with clear groups and modern visual components.
+
+Include the following categories:
+
+A. Appearance
+
+- Light theme.
+- Dark theme.
+- System default, if supported by the current architecture.
+
+The selected theme must be applied consistently throughout the app.
+
+The dark theme should use the app's deep navy visual identity.
+
+The light theme should remain elegant and readable rather than simply inverting every color.
+
+Persist the user's choice.
+
+B. Language
+
+Support at least:
+
+- العربية
+- English
+
+Arabic must be the default language for new installations.
+
+Implement genuine localization, not a superficial change to the language label.
+
+C. Notifications
+
+Provide controls for:
+
+- Enabling or disabling lecture reminders.
+- Configuring lecture reminder offsets.
+- Enabling or disabling exam reminders.
+- Configuring exam reminder offsets.
+- Selecting lecture notification sounds.
+- Selecting exam notification sounds.
+- Previewing sounds.
+- Choosing silent notification behavior.
+- Accessing the system notification settings when required.
+
+Persist all preferences and apply them to actual scheduled notifications.
+
+D. Developer information
+
+Display a dedicated section with the following exact information:
+
+Developer / Studio name:
+
+Kadelor Studio
+
+Email:
+
+Kadelor-studio@gmail.com
+
+Include a button labeled:
+
+تواصل مع المطوّر
+
+When tapped, open the device's email composer with the developer address prefilled.
+
+Suggested subject:
+
+استفسار بخصوص تطبيق لسه فاكرني؟
+
+The user must be able to review and send the email using their email application.
+
+Do not claim that an email has been sent automatically.
+
+Handle the case where no compatible email application is available.
+
+E. General settings
+
+Preserve useful existing settings, such as:
+
+- Notification permissions.
+- Data or account information where already supported.
+- App version information if available.
+- Appropriate privacy or support options if already implemented.
+
+Do not invent unsupported account details or display fake synchronization status.
+
+---
+
+11. FIX THE ARABIC / ENGLISH LANGUAGE SWITCHING BUG
+
+The current language switch is broken: selecting English may produce the opposite behavior or leave some of the interface in Arabic.
+
+Fix the root cause across the entire project.
+
+Required implementation
+
+1. Create or repair a centralized localization system.
+2. Ensure every language option maps to the correct locale.
+3. Selecting Arabic must set the Arabic locale.
+4. Selecting English must set the English locale.
+5. Persist the user's language preference.
+6. Apply the saved language during startup.
+7. Update the interface immediately after a language change where practical.
+8. Do not require an unnecessary restart.
+9. If a restart is genuinely required by the framework, implement a controlled restart or recreation without losing data or returning to the wrong page.
+10. Localize all primary navigation labels.
+11. Localize every screen title, button, form field, validation message, dialog, confirmation, empty state, and status.
+12. Localize Settings, notification preferences, sound selection, and developer-related UI labels.
+13. Localize lecture and exam notification titles and messages.
+14. Localize date and time presentation.
+15. Use the correct locale for weekday names and calendar presentation.
+16. Use correct right-to-left layout in Arabic.
+17. Use correct left-to-right layout in English.
+18. Ensure icons, navigation, alignment, and component layout adapt correctly.
+19. Preserve data when switching languages.
+20. Eliminate hardcoded interface strings where they should be localized.
+
+Avoid mixing Arabic and English unintentionally.
+
+The developer's official name and email must remain exactly as specified, regardless of the selected UI language.
+
+Language acceptance tests
+
+Verify:
+
+- Arabic is selected on a fresh installation.
+- Switching from Arabic to English displays English throughout the interface.
+- Switching from English to Arabic restores Arabic throughout the interface.
+- Restarting the app preserves the selected language.
+- Changing language does not navigate to the Add Lecture form.
+- Changing language does not duplicate records or erase user data.
+- Notifications use the correct language for the saved preference when scheduled.
+- RTL and LTR layouts do not clip or overlap content.
+
+---
+
+12. LOCAL STORAGE AND DATA PERSISTENCE
+
+Preserve the existing local storage implementation and repair it where needed.
+
+All important user data must persist across app restarts.
+
+This includes, as applicable:
+
+- Lectures.
+- Exams.
+- Attendance records.
+- Notification preferences.
+- Sound selections.
+- Theme selection.
+- Language selection.
+- Other existing user settings.
+
+Requirements:
+
+1. Use the existing persistence technology where practical.
+2. Do not rely solely on in-memory state.
+3. Do not overwrite stored values with defaults every time the app opens.
+4. Handle missing or malformed records safely.
+5. Use stable IDs for persistent entities.
+6. Prevent duplicate creation caused by repeated saves or startup logic.
+7. Handle migrations carefully if the data model needs to change.
+8. Preserve real existing data.
+9. Keep the app usable offline to the extent the current architecture supports it.
+10. Handle storage errors gracefully without silently deleting records.
+
+If a schema migration is necessary, make it backward-compatible where possible and preserve existing records.
+
+Never clear the entire local database simply to make the new UI work.
+
+---
+
+13. GOOGLE / EMAIL AUTHENTICATION AND FIREBASE SYNCHRONIZATION
+
+This section is critical. Preserve the project's existing authentication and cloud synchronization.
+
+The application already has a requirement for local storage and Firebase synchronization. When a user signs in using Google or email, their eligible app data should synchronize through the existing Firebase implementation.
+
+Do not remove this functionality during the redesign.
+
+A. Authentication
+
+Inspect the existing implementation of:
+
+- Google sign-in.
+- Email-based sign-in or registration, as already supported.
+- Firebase Authentication.
+- User session persistence.
+- Sign-out behavior.
+- Account-specific data access.
+
+Repair existing issues without unnecessarily replacing working authentication.
+
+Preserve the currently supported sign-in methods.
+
+Do not fabricate successful login states.
+
+Handle authentication failures and missing configuration with understandable error messages.
+
+Do not expose passwords, private credentials, service-account keys, or other secrets in client-side code.
+
+B. Local-first behavior
+
+Preserve the existing local storage and its intended offline behavior.
+
+Users should not lose locally saved information because the network is unavailable.
+
+When a user is signed in, synchronize the supported user data through the existing Firebase architecture.
+
+When a user is signed out, do not accidentally associate their local records with another account.
+
+If the existing app supports offline changes, retain them and reconcile them safely when connectivity returns.
+
+C. Safe synchronization
+
+Implement or repair synchronization so that it:
+
+- Uses the authenticated user's correct identity.
+- Keeps different users' data isolated.
+- Uses stable record identifiers.
+- Avoids duplicate lectures and exams.
+- Handles repeated synchronization idempotently.
+- Preserves attendance records.
+- Preserves settings.
+- Handles additions, edits, and deletions consistently.
+- Handles network errors and retry behavior safely.
+- Does not blindly overwrite cloud data with an empty local database.
+- Does not blindly overwrite local data with an empty cloud response.
+- Does not claim synchronization succeeded before the operation actually succeeds.
+
+Follow the existing Firebase data model and Security Rules. Do not weaken security rules merely to make synchronization work.
+
+Use a clear, consistent conflict-resolution strategy that fits the existing application. Do not silently discard user changes.
+
+If the current architecture needs a migration, make it safe and compatible with existing user data.
+
+D. First sign-in and existing records
+
+When a user signs in for the first time on a device:
+
+1. Determine whether valid local records already exist.
+2. Determine whether the account already has cloud records.
+3. Merge or reconcile data using stable identifiers and a documented conflict strategy.
+4. Avoid duplicating records.
+5. Preserve valid local and cloud records.
+6. Do not interpret an empty response caused by a network or permission error as proof that the cloud database is empty.
+7. Do not upload an empty local database over existing cloud data.
+8. Do not delete real cloud records as part of initialization.
+
+If the project already contains a working synchronization strategy, improve it rather than replacing it with an incompatible design.
+
+---
+
+14. REMOVE DEMONSTRATION DATA AND FAKE RECORDS SAFELY
+
+The current application may contain sample lectures, fake exams, test records, hardcoded demo entries, or startup seed data.
+
+Remove demonstration data from the normal user experience so a new user starts with an empty lecture timetable and an empty exam timetable.
+
+However, do not confuse real user data with demonstration data.
+
+A. Inspect all possible sources
+
+Check for demo data in:
+
+- Hardcoded arrays.
+- Mock repositories.
+- Example JSON files loaded at startup.
+- Default lecture or exam objects.
+- Database seed functions.
+- Local storage initialization.
+- Development fixtures accidentally enabled in production.
+- Firebase initialization or sample documents, if present.
+- UI components that display fake fallback records.
+
+Remove the mechanism that injects fake data into ordinary user accounts.
+
+Do not simply hide fake records in the UI while continuing to save or schedule notifications for them.
+
+B. Safe cleanup rules
+
+- Do not reset the entire local database.
+- Do not clear all local storage.
+- Do not delete entire Firebase collections.
+- Do not delete Firebase users or authentication accounts.
+- Do not delete all cloud documents to remove sample records.
+- Do not erase attendance history, settings, or unrelated data.
+- Do not delete a record merely because its name looks generic.
+- Do not assume a record is fake based only on its title, date, or content.
+- Do not delete ambiguous records from a real user's account.
+
+Only remove records when they can be positively identified as application-generated demo or test records using reliable evidence, such as explicit seed markers, known test IDs, or a clearly isolated development dataset.
+
+If real and fake records cannot be reliably distinguished, preserve the ambiguous records and report the uncertainty.
+
+C. New installation behavior
+
+For a fresh installation with no real saved records:
+
+- Open the Home screen with a useful empty state.
+- Show no fabricated lectures.
+- Show no fabricated exams.
+- Schedule no notifications for nonexistent events.
+- Allow the user to add their first lecture or exam easily.
+
+Do not populate the interface merely to make screenshots look attractive.
+
+---
+
+15. UI STATES, VALIDATION, AND ERROR HANDLING
+
+Implement appropriate UI states throughout the app.
+
+Examples include:
+
+- Initial loading.
+- Empty timetable.
+- Empty exam list.
+- Form validation errors.
+- Save success.
+- Save failure.
+- Delete confirmation.
+- Notification permission denied.
+- Notifications disabled.
+- Offline state where relevant.
+- Firebase synchronization in progress.
+- Firebase synchronization failure.
+- Authentication failure.
+- Missing notification sound.
+- Invalid or expired event.
+- No upcoming lecture.
+- No upcoming exam.
+
+Use clear, user-friendly language.
+
+Do not display raw stack traces or technical exceptions to ordinary users.
+
+Do not display fake success messages when an operation fails.
+
+Do not leave the UI stuck in a loading state after an error.
+
+Prevent accidental duplicate taps from creating duplicate records.
+
+---
+
+16. PERFORMANCE, ACCESSIBILITY, AND CODE QUALITY
+
+Improve code quality without unnecessary rewrites.
+
+Requirements:
+
+- Reuse components and services.
+- Keep the implementation modular and maintainable.
+- Separate UI, business logic, storage, authentication, synchronization, localization, and notification scheduling where appropriate.
+- Remove obsolete code only after confirming it is unused.
+- Avoid duplicated implementations of the same feature.
+- Avoid unnecessary dependencies.
+- Resolve compilation and runtime errors.
+- Avoid memory leaks and unmanaged timers.
+- Ensure countdown timers are cleaned up correctly.
+- Handle app lifecycle transitions.
+- Use accessible text contrast and readable font sizes.
+- Provide appropriate touch targets.
+- Support system back navigation.
+- Avoid excessive network requests.
+- Avoid repeated notification scheduling on every render.
+- Avoid redundant Firebase writes.
+- Ensure the application does not freeze while performing network or storage operations.
+
+Do not sacrifice correctness or data safety for visual effects.
+
+---
+
+17. TESTING AND ACCEPTANCE CRITERIA
+
+After implementing the changes, run the tests and checks supported by the actual development environment.
+
+Do not merely state that testing is recommended.
+
+Perform the available checks and report their real results.
+
+A. Navigation
+
+Verify:
+
+- Splash screen leads to Home.
+- All four primary sections open correctly.
+- Add Lecture is a form/action inside Lecture Timetable.
+- Add Exam is a form/action inside Exam Timetable.
+- Back navigation works.
+- Returning from forms preserves sensible navigation state.
+- No unexpected duplicate pages or navigation loops occur.
+
+B. Lectures
+
+Verify:
+
+- A lecture can be added.
+- The lecture appears in the weekly timetable.
+- The lecture appears on Home on the correct day.
+- Editing updates the existing record.
+- Deleting removes the correct record.
+- Invalid times are rejected.
+- Attendance is stored against the correct occurrence.
+- Records persist after restarting the app.
+- Editing or deleting updates associated notifications.
+
+C. Exams
+
+Verify:
+
+- An exam can be added.
+- It appears on the correct date.
+- Its countdown is accurate.
+- Editing updates the existing record.
+- Deleting removes the correct record.
+- Records persist after restarting the app.
+- Associated notifications are updated or canceled.
+
+D. Notifications
+
+Verify as far as the available runtime and device environment allow:
+
+- Notification permissions are handled correctly.
+- Lecture reminder offsets are respected.
+- Exam reminder offsets are respected.
+- Notifications use unique identifiers.
+- Repeated startup does not create duplicate notifications.
+- Editing events reschedules reminders.
+- Deleting events cancels reminders.
+- Silent mode leaves notifications visible.
+- Selected sounds persist.
+- Notification taps open the correct destination.
+- Notification language matches the selected preference where supported.
+
+Clearly distinguish code-level tests from tests that require a real Android device.
+
+E. Localization
+
+Verify:
+
+- Arabic is the default for new installations.
+- Arabic displays correctly in RTL.
+- English displays correctly in LTR.
+- Every screen and form is localized.
+- Settings and dialog text are localized.
+- The selected language persists after restart.
+- Switching languages does not change the wrong screen.
+- Data remains intact after switching languages.
+
+F. Persistence and Firebase
+
+Verify where the available configuration permits:
+
+- Local records survive restarts.
+- Authentication flows remain functional.
+- Google and email sign-in methods supported by the project are preserved.
+- User data remains isolated by account.
+- Existing records are not duplicated.
+- Offline changes are preserved where offline support exists.
+- Synchronization does not overwrite real data with empty data.
+- Demo data is not injected into normal accounts.
+- Real user data is not deleted by cleanup.
+- Authentication and sync errors are handled properly.
+
+Do not fabricate test accounts, successful cloud operations, device results, or test output.
+
+If Firebase credentials, device access, permissions, or external configuration are unavailable, explain exactly which checks could not be completed and why.
+
+---
+
+18. IMPLEMENTATION PRIORITY
+
+Implement changes in this order to minimize regressions:
+
+Priority 1 — Stability and data safety
+
+- Inspect the existing architecture.
+- Fix startup and navigation bugs.
+- Preserve local data, authentication, and Firebase synchronization.
+- Prevent destructive cleanup and accidental data loss.
+
+Priority 2 — Core application structure
+
+- Restore the four primary sections.
+- Ensure Home is the initial destination.
+- Complete lecture and exam management.
+
+Priority 3 — Real functionality
+
+- Repair persistence.
+- Implement actual notification scheduling.
+- Implement reminder editing and cancellation.
+- Implement sound preferences within platform limitations.
+
+Priority 4 — Localization
+
+- Fix Arabic and English switching.
+- Ensure correct RTL/LTR layout.
+- Localize all UI and notification strings.
+
+Priority 5 — Visual modernization
+
+- Modernize the splash screen.
+- Apply the unified visual design to all screens.
+- Improve empty states, forms, dialogs, transitions, and accessibility.
+
+Priority 6 — Verification
+
+- Run available builds, tests, static checks, and runtime checks.
+- Fix any newly introduced regressions.
+- Report verified results and remaining limitations.
+
+These priorities do not mean that later features can be omitted. The goal is to implement the complete application while reducing risk.
+
+---
+
+19. STRICT RULES — DO NOT VIOLATE
+
+1. Do not start a completely separate application instead of repairing the existing project.
+2. Do not replace real functionality with mockups or placeholders.
+3. Do not leave the Add Lecture form as the initial destination.
+4. Do not remove any of the four primary sections.
+5. Do not add Add Lecture or Add Exam as extra primary navigation destinations.
+6. Do not fabricate lectures, exams, attendance, notifications, or successful synchronization.
+7. Do not clear the entire database to remove sample data.
+8. Do not delete ambiguous records from local storage or Firebase.
+9. Do not remove Google or email authentication that already exists.
+10. Do not break Firebase synchronization.
+11. Do not expose secrets or weaken Firebase security rules.
+12. Do not create fake notification controls that do not affect actual notifications.
+13. Do not claim that background notifications work if the implementation only runs while the app is open.
+14. Do not claim that sounds can be changed if Android's notification channel configuration prevents the implemented change.
+15. Do not translate only the navigation bar while leaving the rest of the app in the previous language.
+16. Do not reset the user's theme, language, or notification preferences unnecessarily.
+17. Do not introduce an incompatible data migration without protecting existing records.
+18. Do not report tests as successful unless they were actually performed.
+19. Do not stop after producing a plan. Implement the changes in the existing project.
+20. If a requirement cannot be implemented because of missing platform support, configuration, permissions, or credentials, implement the safe portion that is possible and clearly report the remaining requirement.
+
+---
+
+20. FINAL DELIVERABLE
+
+When you finish, provide a concise but informative implementation report covering:
+
+1. The actual root causes of the original problems.
+2. The files and components changed.
+3. The navigation changes completed.
+4. The functionality implemented for lectures and exams.
+5. The notification and sound behavior implemented.
+6. The localization fixes completed.
+7. The local storage and Firebase changes completed.
+8. How demonstration data was identified and handled safely.
+9. The tests and builds actually run, including their real results.
+10. Any remaining bugs, external configuration steps, Android limitations, or features that could not be verified.
+
+Separate the report into:
+
+- Implemented and verified
+- Implemented but not verified on a real device
+- Still requires configuration or additional work
+
+Do not present unfinished features as completed.
+
+FINAL OBJECTIVE
+
+Deliver a stable, polished, fully functional version of "لسه فاكرني؟" that matches the existing icon's futuristic identity, opens directly to a useful Home screen, contains exactly four primary sections, manages recurring lectures and exams, records attendance, delivers real scheduled Android notifications with appropriate sound controls, supports complete Arabic/English localization, preserves local data, and maintains safe Google/email authentication and Firebase synchronization.
+
+Start by inspecting the existing project, then implement the fixes directly in that project. Preserve real user data and existing functionality throughout the process.
