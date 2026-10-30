@@ -1,6 +1,6 @@
 name: Build Android APK
 
-on:
+'on':
 workflow_dispatch:
 push:
 branches:
@@ -27,17 +27,13 @@ steps:
 
   - name: Set up Android SDK
     uses: android-actions/setup-android@v3
-    continue-on-error: false
-
-  - name: Accept Android SDK licenses
-    run: yes | sdkmanager --licenses || true
 
   - name: Check project files
     run: |
-      echo "Checking Android project..."
+      echo "Checking project files"
       ls -la
       if [ ! -f "./gradlew" ]; then
-        echo "ERROR: gradlew was not found in the repository root."
+        echo "Gradle wrapper not found in repository root"
         exit 1
       fi
       chmod +x ./gradlew
