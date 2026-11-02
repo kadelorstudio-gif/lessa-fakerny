@@ -102,32 +102,8 @@ android {
           }
         }
       }
-      if (!ksFile.exists()) {
-        val userHomeKeystore = file("${System.getProperty("user.home")}/.android/debug.keystore")
-        if (userHomeKeystore.exists()) {
-          storeFile = userHomeKeystore
-        } else {
-          try {
-            ksFile.parentFile?.mkdirs()
-            ProcessBuilder(
-              "keytool", "-genkeypair",
-              "-alias", "androiddebugkey",
-              "-keypass", "android",
-              "-keystore", ksFile.absolutePath,
-              "-storepass", "android",
-              "-dname", "CN=Android Debug,O=Android,C=US",
-              "-keyalg", "RSA",
-              "-keysize", "2048",
-              "-validity", "10000"
-            ).redirectErrorStream(true).start().waitFor()
-          } catch (e: Exception) {
-            // ignore
-          }
-          storeFile = if (ksFile.exists()) ksFile else userHomeKeystore
-        }
-      } else {
-        storeFile = ksFile
-      }
+      val userHomeKeystore = file("${System.getProperty("user.home")}/.android/debug.keystore")
+      storeFile = if (ksFile.exists()) ksFile else userHomeKeystore
       storePassword = "android"
       keyAlias = "androiddebugkey"
       keyPassword = "android"
@@ -144,9 +120,13 @@ android {
       signingConfig = signingConfigs.getByName("release")
     }
     debug {
-      // Do not remove or modify this signingConfig assignment. It is necessary for Android apps in
-      // AI Studio.
-      signingConfig = signingConfigs.getByName("debugConfig")
+      // Use custom debugConfig if local keystore file exists, otherwise standard debug signing managed by AGP
+      val customKs = file("${rootDir}/debug.keystore")
+      signingConfig = if (customKs.exists()) {
+        signingConfigs.getByName("debugConfig")
+      } else {
+        signingConfigs.getByName("debug")
+      }
     }
   }
   compileOptions {
