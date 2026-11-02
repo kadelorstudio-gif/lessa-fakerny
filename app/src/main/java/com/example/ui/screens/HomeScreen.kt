@@ -59,7 +59,6 @@ import com.example.data.AttendanceRecord
 import com.example.data.Lecture
 import com.example.ui.components.GlassBadge
 import com.example.ui.components.GlassCard
-import com.example.ui.components.GlassNativeAdCard
 import com.example.ui.components.GlassOutlineButton
 import com.example.ui.theme.GlassBorder
 import com.example.ui.theme.NeonBlue
@@ -156,13 +155,22 @@ fun HomeScreen(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold
                     )
-                    val dateFormat = if (isEn) {
-                        SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH)
-                    } else {
-                        SimpleDateFormat("EEEE، d MMMM yyyy", Locale("ar"))
+                    val dateFormat = try {
+                        if (isEn) {
+                            SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH)
+                        } else {
+                            SimpleDateFormat("EEEE, d MMMM yyyy", Locale("ar"))
+                        }
+                    } catch (e: Exception) {
+                        SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault())
+                    }
+                    val formattedDate = try {
+                        dateFormat.format(calendar.time)
+                    } catch (e: Exception) {
+                        ""
                     }
                     Text(
-                        text = dateFormat.format(calendar.time),
+                        text = formattedDate,
                         color = TextSecondary,
                         fontSize = 12.sp
                     )
@@ -289,7 +297,10 @@ fun HomeScreen(
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    itemsIndexed(todayLectures) { index, lecture ->
+                    itemsIndexed(
+                        items = todayLectures,
+                        key = { index, lecture -> "today_lec_${lecture.id}_$index" }
+                    ) { index, lecture ->
                         val isOngoing = currentMinutesOfDay in lecture.startTimeMinutes until lecture.endTimeMinutes
                         val isCompleted = currentMinutesOfDay >= lecture.endTimeMinutes
                         val isUpcoming = currentMinutesOfDay < lecture.startTimeMinutes
@@ -297,7 +308,9 @@ fun HomeScreen(
                         val isMissed = isCompleted && !isAttended
 
                         val cardColor = try {
-                            Color(android.graphics.Color.parseColor(lecture.cardColorHex))
+                            val rawHex = lecture.cardColorHex.trim()
+                            val hex = if (rawHex.startsWith("#")) rawHex else "#$rawHex"
+                            Color(android.graphics.Color.parseColor(hex))
                         } catch (e: Exception) {
                             NeonCyan
                         }
@@ -319,14 +332,10 @@ fun HomeScreen(
                             strings = strings,
                             isEn = isEn
                         )
-
-                        if (index == 1 && todayLectures.size > 2) {
-                            GlassNativeAdCard()
-                        }
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(88.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
                     }
                 }
             }
@@ -336,7 +345,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 20.dp, bottom = 84.dp)
+                .padding(start = 20.dp, bottom = 16.dp)
                 .shadow(
                     elevation = 20.dp,
                     shape = CircleShape,
@@ -445,7 +454,7 @@ fun LectureClockHeroCard(
         return
     }
 
-    val activeLecture = ongoingLecture ?: nextLecture!!
+    val activeLecture = ongoingLecture ?: nextLecture ?: return
     val isOngoing = ongoingLecture != null
 
     val totalStartSecs = activeLecture.startTimeMinutes * 60
@@ -462,15 +471,16 @@ fun LectureClockHeroCard(
     val mins = (remainingSecs % 3600) / 60
     val secs = remainingSecs % 60
 
-    val timeFormatted = String.format("%02d:%02d:%02d", hours, mins, secs)
+    val timeFormatted = String.format(Locale.US, "%02d:%02d:%02d", hours, mins, secs)
 
-    val progress = if (isOngoing) {
+    val rawProgress = if (isOngoing) {
         val totalDuration = (totalEndSecs - totalStartSecs).coerceAtLeast(1)
         val elapsed = currentTotalSecs - totalStartSecs
         (elapsed.toFloat() / totalDuration.toFloat()).coerceIn(0f, 1f)
     } else {
         0.1f
     }
+    val progress = if (rawProgress.isNaN()) 0.1f else rawProgress
 
     val themeColor = if (isOngoing) StatusSuccess else NeonCyan
 
@@ -514,29 +524,33 @@ fun LectureClockHeroCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Canvas(modifier = Modifier.fillMaxSize()) {
-                        val strokeWidth = 5.dp.toPx()
-                        val diameter = size.minDimension - strokeWidth
-                        val radius = diameter / 2f
-                        val center = Offset(size.width / 2f, size.height / 2f)
+                        if (size.width > 0f && size.height > 0f) {
+                            val strokeWidth = 5.dp.toPx()
+                            val diameter = (size.minDimension - strokeWidth).coerceAtLeast(1f)
+                            val radius = (diameter / 2f).coerceAtLeast(1f)
+                            val center = Offset(size.width / 2f, size.height / 2f)
 
-                        drawCircle(
-                            color = themeColor.copy(alpha = 0.15f),
-                            radius = radius,
-                            center = center,
-                            style = Stroke(width = strokeWidth)
-                        )
+                            drawCircle(
+                                color = themeColor.copy(alpha = 0.15f),
+                                radius = radius,
+                                center = center,
+                                style = Stroke(width = strokeWidth)
+                            )
 
-                        drawArc(
-                            brush = Brush.sweepGradient(
-                                listOf(themeColor, NeonBlue, NeonMagenta, themeColor)
-                            ),
-                            startAngle = -90f,
-                            sweepAngle = progress * 360f,
-                            useCenter = false,
-                            topLeft = Offset(strokeWidth / 2f, strokeWidth / 2f),
-                            size = Size(diameter, diameter),
-                            style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
-                        )
+                            val sweepAngle = (progress * 360f).coerceIn(0f, 360f)
+
+                            drawArc(
+                                brush = Brush.sweepGradient(
+                                    listOf(themeColor, NeonBlue, NeonMagenta, themeColor)
+                                ),
+                                startAngle = -90f,
+                                sweepAngle = sweepAngle,
+                                useCenter = false,
+                                topLeft = Offset((size.width - diameter) / 2f, (size.height - diameter) / 2f),
+                                size = Size(diameter, diameter),
+                                style = Stroke(width = strokeWidth, cap = StrokeCap.Round)
+                            )
+                        }
                     }
 
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {

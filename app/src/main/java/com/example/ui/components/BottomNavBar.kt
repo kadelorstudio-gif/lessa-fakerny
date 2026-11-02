@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Today
@@ -49,7 +50,7 @@ import com.example.ui.theme.TextMuted
 import com.example.ui.theme.TextPrimary
 
 enum class AppScreen {
-    HOME, TIMETABLE, EXAMS, PROFILE, SETTINGS
+    HOME, TIMETABLE, EXAMS, STATS, SETTINGS
 }
 
 @Composable
@@ -142,12 +143,12 @@ fun GlassBottomNavBar(
             )
 
             NavBarItem(
-                screen = AppScreen.PROFILE,
-                title = strings.navProfile,
-                icon = Icons.Default.AccountCircle,
-                isSelected = currentScreen == AppScreen.PROFILE,
+                screen = AppScreen.STATS,
+                title = strings.navStats,
+                icon = Icons.Default.CheckCircle,
+                isSelected = currentScreen == AppScreen.STATS,
                 accentColor = NeonCyan,
-                onClick = { onScreenSelected(AppScreen.PROFILE) }
+                onClick = { onScreenSelected(AppScreen.STATS) }
             )
 
             NavBarItem(

@@ -2,21 +2,14 @@ package com.example.ui.screens
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,19 +22,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -65,294 +54,195 @@ import kotlinx.coroutines.delay
 fun SplashScreen(
     onSplashFinished: () -> Unit
 ) {
-    val scale = remember { Animatable(0.80f) }
+    val scale = remember { Animatable(0.85f) }
     val alpha = remember { Animatable(0f) }
     val progress = remember { Animatable(0f) }
-
-    val infiniteTransition = rememberInfiniteTransition(label = "splash_spin")
-    val rotation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(6000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "halo_rotation"
-    )
-
-    val haloPulse by infiniteTransition.animateFloat(
-        initialValue = 0.85f,
-        targetValue = 1.15f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "halo_pulse"
-    )
 
     LaunchedEffect(Unit) {
         scale.animateTo(
             targetValue = 1.0f,
-            animationSpec = tween(durationMillis = 700, easing = FastOutSlowInEasing)
+            animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing)
         )
         alpha.animateTo(
             targetValue = 1.0f,
-            animationSpec = tween(durationMillis = 500)
+            animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing)
         )
         progress.animateTo(
             targetValue = 1.0f,
-            animationSpec = tween(durationMillis = 1100, easing = FastOutSlowInEasing)
+            animationSpec = tween(durationMillis = 850, easing = FastOutSlowInEasing)
         )
-        delay(350)
+        delay(250)
         onSplashFinished()
     }
 
     GlassBackground {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(28.dp)
                 .testTag("splash_screen"),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            contentAlignment = Alignment.Center
         ) {
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Central Luminous Glass Capsule with Rotating Neon Orbit
-            Box(
-                modifier = Modifier
-                    .size(220.dp)
-                    .scale(scale.value)
-                    .alpha(alpha.value),
-                contentAlignment = Alignment.Center
-            ) {
-                // Rotating Cosmic Neon Halo Ring
-                Canvas(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .rotate(rotation)
-                ) {
-                    val strokeWidth = 3.dp.toPx()
-                    val radius = (size.minDimension / 2f) - (strokeWidth / 2f) - 6.dp.toPx()
-                    drawCircle(
-                        brush = Brush.sweepGradient(
-                            listOf(
-                                NeonCyan,
-                                NeonBlue,
-                                NeonViolet,
-                                NeonMagenta,
-                                NeonCyan
-                            )
-                        ),
-                        radius = radius * haloPulse,
-                        center = Offset(size.width / 2f, size.height / 2f),
-                        style = Stroke(width = strokeWidth)
-                    )
-                }
-
-                // Ambient Radial Flare Glow
-                Canvas(modifier = Modifier.size(190.dp)) {
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                NeonCyan.copy(alpha = 0.35f * haloPulse),
-                                NeonViolet.copy(alpha = 0.20f),
-                                Color.Transparent
-                            )
-                        ),
-                        radius = size.width / 2f
-                    )
-                }
-
-                // Frosted Glass Beveled Tile encasing the Logo
-                Box(
-                    modifier = Modifier
-                        .size(150.dp)
-                        .shadow(
-                            elevation = 32.dp,
-                            shape = RoundedCornerShape(38.dp),
-                            spotColor = NeonCyan.copy(alpha = 0.65f),
-                            ambientColor = NeonViolet.copy(alpha = 0.45f)
-                        )
-                        .clip(RoundedCornerShape(38.dp))
-                        .background(
-                            Brush.linearGradient(
-                                colors = listOf(
-                                    SurfaceCard.copy(alpha = 0.90f),
-                                    SurfaceElevated.copy(alpha = 0.75f),
-                                    SurfaceCard.copy(alpha = 0.95f)
-                                )
-                            )
-                        )
-                        .border(
-                            BorderStroke(
-                                1.5.dp,
-                                Brush.linearGradient(
-                                    listOf(
-                                        Color.White.copy(alpha = 0.8f),
-                                        NeonCyan,
-                                        NeonMagenta,
-                                        Color.White.copy(alpha = 0.3f)
-                                    )
-                                )
-                            ),
-                            RoundedCornerShape(38.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    // Specular Top Shine on Glass Tile
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(45.dp)
-                            .align(Alignment.TopCenter)
-                            .background(
-                                Brush.verticalGradient(
-                                    listOf(Color.White.copy(alpha = 0.22f), Color.Transparent)
-                                )
-                            )
-                    )
-
-                    Image(
-                        painter = painterResource(id = R.drawable.app_logo),
-                        contentDescription = "Logo",
-                        modifier = Modifier
-                            .size(125.dp)
-                            .clip(RoundedCornerShape(30.dp))
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(36.dp))
-
-            // Glowing App Title with Multi-Color Gradient
-            Text(
-                text = "لسه فاكرني؟",
-                style = TextStyle(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            NeonCyan,
-                            Color.White,
-                            SoftLavender,
-                            NeonMagenta
-                        )
-                    ),
-                    fontSize = 36.sp,
-                    fontWeight = FontWeight.ExtraBold
-                ),
-                modifier = Modifier
-                    .alpha(alpha.value)
-                    .shadow(
-                        elevation = 16.dp,
-                        spotColor = NeonCyan.copy(alpha = 0.5f)
-                    )
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Ultra-modern glowing glass badge
-            Box(
-                modifier = Modifier
-                    .alpha(alpha.value)
-                    .shadow(
-                        elevation = 8.dp,
-                        shape = CircleShape,
-                        spotColor = NeonViolet.copy(alpha = 0.35f)
-                    )
-                    .clip(CircleShape)
-                    .background(
-                        Brush.horizontalGradient(
-                            listOf(
-                                NeonViolet.copy(alpha = 0.25f),
-                                SurfaceCard.copy(alpha = 0.85f),
-                                NeonCyan.copy(alpha = 0.20f)
-                            )
-                        )
-                    )
-                    .border(
-                        BorderStroke(
-                            1.dp,
-                            Brush.horizontalGradient(
-                                listOf(NeonCyan.copy(alpha = 0.6f), Color.White.copy(alpha = 0.3f), NeonViolet.copy(alpha = 0.6f))
-                            )
-                        ),
-                        CircleShape
-                    )
-                    .padding(horizontal = 16.dp, vertical = 7.dp)
-            ) {
-                Text(
-                    text = "منظّم المحاضرات والامتحانات الذكي • إصدار زجاجي متوهج 🎓",
-                    color = TextPrimary,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // Futuristic Glowing Glass Progress Track
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 40.dp)
-                    .alpha(alpha.value),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .fillMaxSize()
+                    .padding(32.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // Central Hero: Sleek, Floating Minimalist Glass Card with App Logo
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(6.dp)
-                        .clip(CircleShape)
-                        .background(SurfaceElevated.copy(alpha = 0.8f))
-                        .border(BorderStroke(0.8.dp, Color.White.copy(alpha = 0.15f)), CircleShape)
+                        .scale(scale.value)
+                        .alpha(alpha.value)
                 ) {
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth(progress.value)
-                            .height(6.dp)
-                            .clip(CircleShape)
+                            .size(140.dp)
+                            .shadow(
+                                elevation = 30.dp,
+                                shape = RoundedCornerShape(36.dp),
+                                spotColor = NeonCyan.copy(alpha = 0.55f),
+                                ambientColor = NeonViolet.copy(alpha = 0.35f)
+                            )
+                            .clip(RoundedCornerShape(36.dp))
                             .background(
-                                Brush.horizontalGradient(
+                                Brush.linearGradient(
                                     colors = listOf(
-                                        NeonCyan,
-                                        NeonBlue,
-                                        NeonViolet,
-                                        NeonMagenta
+                                        SurfaceCard.copy(alpha = 0.92f),
+                                        SurfaceElevated.copy(alpha = 0.78f),
+                                        SurfaceCard.copy(alpha = 0.96f)
                                     )
                                 )
                             )
-                            .shadow(
-                                elevation = 6.dp,
-                                spotColor = NeonCyan
-                            )
+                            .border(
+                                BorderStroke(
+                                    1.5.dp,
+                                    Brush.linearGradient(
+                                        listOf(
+                                            Color.White.copy(alpha = 0.85f),
+                                            NeonCyan.copy(alpha = 0.8f),
+                                            NeonViolet.copy(alpha = 0.6f),
+                                            Color.White.copy(alpha = 0.25f)
+                                        )
+                                    )
+                                ),
+                                RoundedCornerShape(36.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // Glossy specular highlight
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(42.dp)
+                                .align(Alignment.TopCenter)
+                                .background(
+                                    Brush.verticalGradient(
+                                        listOf(Color.White.copy(alpha = 0.25f), Color.Transparent)
+                                    )
+                                )
+                        )
+
+                        Image(
+                            painter = painterResource(id = R.drawable.app_logo),
+                            contentDescription = "Logo",
+                            modifier = Modifier
+                                .size(112.dp)
+                                .clip(RoundedCornerShape(26.dp))
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(26.dp))
+
+                    // Clean, Bold Luminous Title
+                    Text(
+                        text = "لسه فاكرني؟",
+                        style = TextStyle(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    NeonCyan,
+                                    Color.White,
+                                    SoftLavender,
+                                    NeonMagenta
+                                )
+                            ),
+                            fontSize = 34.sp,
+                            fontWeight = FontWeight.ExtraBold
+                        ),
+                        modifier = Modifier.shadow(
+                            elevation = 16.dp,
+                            spotColor = NeonCyan.copy(alpha = 0.5f)
+                        )
                     )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Minimalist Glass Subtitle Badge
+                    Box(
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .background(SurfaceElevated.copy(alpha = 0.75f))
+                            .border(
+                                BorderStroke(
+                                    1.dp,
+                                    Brush.horizontalGradient(
+                                        listOf(NeonCyan.copy(alpha = 0.5f), NeonViolet.copy(alpha = 0.5f))
+                                    )
+                                ),
+                                CircleShape
+                            )
+                            .padding(horizontal = 16.dp, vertical = 6.dp)
+                    ) {
+                        Text(
+                            text = "منظّمك الجامعي الذكي 🎓",
+                            color = TextPrimary,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                // Bottom Minimal Progress Track
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .alpha(alpha.value)
+                        .padding(bottom = 20.dp)
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(6.dp)
+                            .width(130.dp)
+                            .height(4.dp)
                             .clip(CircleShape)
-                            .background(NeonCyan)
-                            .shadow(4.dp, spotColor = NeonCyan)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
+                            .background(SurfaceElevated.copy(alpha = 0.8f))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(progress.value)
+                                .height(4.dp)
+                                .clip(CircleShape)
+                                .background(
+                                    Brush.horizontalGradient(
+                                        listOf(NeonCyan, NeonBlue, NeonMagenta)
+                                    )
+                                )
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
                     Text(
-                        text = "V1.0 • NEON GLASS",
+                        text = "NEON EDITION",
                         color = TextMuted,
-                        fontSize = 11.sp,
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 1.2.sp
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

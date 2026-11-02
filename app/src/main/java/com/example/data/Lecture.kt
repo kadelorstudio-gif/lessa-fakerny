@@ -6,18 +6,20 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "lectures")
 data class Lecture(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val subjectName: String,
-    val doctorName: String,
-    val hallNumber: String,
-    val hallName: String,
-    val dayOfWeek: Int, // 1 = Sunday, 2 = Monday, 3 = Tuesday, 4 = Wednesday, 5 = Thursday, 6 = Friday, 7 = Saturday
-    val startTimeMinutes: Int, // e.g., 540 for 9:00 AM
-    val endTimeMinutes: Int,   // e.g., 660 for 11:00 AM
-    val cardColorHex: String = "#00F0FF",
+    val subjectName: String = "",
+    val doctorName: String = "",
+    val hallNumber: String = "",
+    val hallName: String = "",
+    val dayOfWeek: Int = 1,
+    val startTimeMinutes: Int = 0,
+    val endTimeMinutes: Int = 0,
+    val cardColorHex: String = "#00E5FF",
     val requiredTools: String = "",
     val isAttended: Boolean = false,
     val synced: Boolean = false
 ) {
+    constructor() : this(0, "", "", "", "", 1, 0, 0, "#00E5FF", "", false, false)
+
     fun formatStartTime(): String = formatMinutes(startTimeMinutes)
     fun formatEndTime(): String = formatMinutes(endTimeMinutes)
 
@@ -30,6 +32,6 @@ data class Lecture(
             hours24 > 12 -> hours24 - 12
             else -> hours24
         }
-        return String.format("%02d:%02d %s", hours12, mins, amPm)
+        return String.format(java.util.Locale.US, "%02d:%02d %s", hours12, mins, amPm)
     }
 }

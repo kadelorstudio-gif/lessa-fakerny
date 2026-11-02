@@ -21,12 +21,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.EventNote
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.ShoppingBag
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FloatingActionButton
@@ -52,7 +51,6 @@ import androidx.compose.ui.unit.sp
 import com.example.data.Exam
 import com.example.ui.components.GlassBadge
 import com.example.ui.components.GlassCard
-import com.example.ui.components.GlassNativeAdCard
 import com.example.ui.theme.NeonMagenta
 import com.example.ui.theme.NeonViolet
 import com.example.ui.theme.SoftLavender
@@ -129,7 +127,7 @@ fun ExamsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .padding(bottom = 60.dp),
+                        .padding(bottom = 20.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -138,24 +136,24 @@ fun ExamsScreen(
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(72.dp)
+                                .size(74.dp)
                                 .clip(CircleShape)
-                                .background(NeonViolet.copy(alpha = 0.12f))
-                                .border(BorderStroke(1.dp, NeonViolet.copy(alpha = 0.35f)), CircleShape),
+                                .background(NeonViolet.copy(alpha = 0.15f))
+                                .border(BorderStroke(1.2.dp, NeonViolet.copy(alpha = 0.45f)), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
-                                imageVector = Icons.Default.EventNote,
+                                imageVector = Icons.Default.Timer,
                                 contentDescription = null,
                                 tint = NeonViolet,
                                 modifier = Modifier.size(36.dp)
                             )
                         }
-                        Spacer(modifier = Modifier.height(14.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
                             text = strings.emptyExamsTitle,
                             color = TextPrimary,
-                            fontSize = 16.sp,
+                            fontSize = 17.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(6.dp))
@@ -172,11 +170,19 @@ fun ExamsScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
+                    contentPadding = androidx.compose.foundation.layout.PaddingValues(top = 4.dp, bottom = 80.dp),
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    itemsIndexed(sortedExams) { index, exam ->
+                    itemsIndexed(
+                        items = sortedExams,
+                        key = { index, exam -> "exam_${exam.id}_$index" }
+                    ) { _, exam ->
                         val cardColor = try {
-                            Color(android.graphics.Color.parseColor(exam.cardColorHex))
+                            if (!exam.cardColorHex.isNullOrBlank() && exam.cardColorHex.startsWith("#")) {
+                                Color(android.graphics.Color.parseColor(exam.cardColorHex))
+                            } else {
+                                NeonViolet
+                            }
                         } catch (e: Exception) {
                             NeonViolet
                         }
@@ -190,24 +196,16 @@ fun ExamsScreen(
                             strings = strings,
                             isEn = isEn
                         )
-
-                        if (index == 0 && sortedExams.size > 1) {
-                            GlassNativeAdCard()
-                        }
-                    }
-
-                    item {
-                        Spacer(modifier = Modifier.height(88.dp))
                     }
                 }
             }
         }
 
-        // Luminous Glass Glowing FAB
+        // Luminous Glass Glowing FAB with correct Scaffold inner padding
         Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 20.dp, bottom = 84.dp)
+                .padding(start = 20.dp, bottom = 16.dp)
                 .shadow(
                     elevation = 20.dp,
                     shape = CircleShape,
@@ -266,7 +264,7 @@ fun ExamsScreen(
                             examToDelete = null
                         }
                     ) {
-                        Text(strings.clearDataConfirmBtn.substringBefore("،"), color = StatusError, fontWeight = FontWeight.Bold)
+                        Text(if (isEn) "Delete" else "حذف", color = StatusError, fontWeight = FontWeight.Bold)
                     }
                 },
                 dismissButton = {
@@ -290,23 +288,29 @@ fun ExamCountdownCardItem(
     strings: AppStrings,
     isEn: Boolean
 ) {
-    val diffMillis = exam.examDateMillis - nowMillis
-    val isPast = diffMillis <= 0
+    val examDate = exam.examDateMillis
+    val diffMillis = (examDate - nowMillis).coerceAtLeast(0L)
+    val isPast = examDate in 1L..nowMillis
 
-    val totalSecs = if (isPast) 0L else diffMillis / 1000
-    val days = totalSecs / (24 * 3600)
-    val hours = (totalSecs % (24 * 3600)) / 3600
-    val mins = (totalSecs % 3600) / 60
-    val secs = totalSecs % 60
+    val totalSecs = if (isPast || examDate <= 0L) 0L else diffMillis / 1000L
+    val days = totalSecs / (24L * 3600L)
+    val hours = (totalSecs % (24L * 3600L)) / 3600L
+    val mins = (totalSecs % 3600L) / 60L
+    val secs = totalSecs % 60L
 
-    val dateFormat = if (isEn) {
-        SimpleDateFormat("EEEE, d MMMM yyyy • hh:mm a", Locale.ENGLISH)
-    } else {
-        SimpleDateFormat("EEEE، d MMMM yyyy • hh:mm a", Locale("ar"))
+    val formattedDate = try {
+        if (examDate > 0L) {
+            val pattern = "EEEE, d MMMM yyyy • hh:mm a"
+            val locale = if (isEn) Locale.ENGLISH else Locale("ar")
+            SimpleDateFormat(pattern, locale).format(Date(examDate))
+        } else {
+            ""
+        }
+    } catch (e: Exception) {
+        ""
     }
-    val formattedDate = dateFormat.format(Date(exam.examDateMillis))
 
-    val isUrgent = !isPast && days <= 3
+    val isUrgent = !isPast && examDate > 0L && days <= 3
 
     GlassCard(
         modifier = Modifier.fillMaxWidth(),
@@ -401,7 +405,7 @@ fun ExamCountdownCardItem(
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.Build,
+                        imageVector = Icons.Default.ShoppingBag,
                         contentDescription = null,
                         tint = StatusSuccess,
                         modifier = Modifier.size(13.dp)
@@ -436,11 +440,11 @@ fun ExamCountdownCardItem(
                 ) {
                     FuturisticTimeUnit(value = days.toString(), label = if (isEn) "Days" else "أيام", color = cardColor)
                     Text(":", color = SoftLavender.copy(alpha = 0.4f), fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    FuturisticTimeUnit(value = String.format("%02d", hours), label = if (isEn) "Hours" else "ساعات", color = cardColor)
+                    FuturisticTimeUnit(value = String.format(Locale.US, "%02d", hours), label = if (isEn) "Hours" else "ساعات", color = cardColor)
                     Text(":", color = SoftLavender.copy(alpha = 0.4f), fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    FuturisticTimeUnit(value = String.format("%02d", mins), label = if (isEn) "Mins" else "دقائق", color = cardColor)
+                    FuturisticTimeUnit(value = String.format(Locale.US, "%02d", mins), label = if (isEn) "Mins" else "دقائق", color = cardColor)
                     Text(":", color = SoftLavender.copy(alpha = 0.4f), fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                    FuturisticTimeUnit(value = String.format("%02d", secs), label = if (isEn) "Secs" else "ثواني", color = cardColor)
+                    FuturisticTimeUnit(value = String.format(Locale.US, "%02d", secs), label = if (isEn) "Secs" else "ثواني", color = cardColor)
                 }
             }
         }

@@ -55,7 +55,6 @@ import androidx.compose.ui.unit.sp
 import com.example.data.Lecture
 import com.example.ui.components.GlassBadge
 import com.example.ui.components.GlassCard
-import com.example.ui.components.GlassNativeAdCard
 import com.example.ui.theme.GlassBorder
 import com.example.ui.theme.NeonBlue
 import com.example.ui.theme.NeonCyan
@@ -266,7 +265,10 @@ fun TimetableScreen(
                         .weight(1f),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    itemsIndexed(dayLectures) { index, lecture ->
+                    itemsIndexed(
+                        items = dayLectures,
+                        key = { index, lecture -> "tt_lec_${lecture.id}_$index" }
+                    ) { index, lecture ->
                         val cardColor = try {
                             Color(android.graphics.Color.parseColor(lecture.cardColorHex))
                         } catch (e: Exception) {
@@ -282,14 +284,10 @@ fun TimetableScreen(
                             onDelete = { lectureToDelete = lecture },
                             strings = strings
                         )
-
-                        if (index == 1 && dayLectures.size > 2) {
-                            GlassNativeAdCard()
-                        }
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(88.dp))
+                        Spacer(modifier = Modifier.height(24.dp))
                     }
                 }
             }
@@ -299,7 +297,7 @@ fun TimetableScreen(
         Box(
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(start = 20.dp, bottom = 84.dp)
+                .padding(start = 20.dp, bottom = 16.dp)
                 .shadow(
                     elevation = 20.dp,
                     shape = CircleShape,

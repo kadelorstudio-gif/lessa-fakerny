@@ -69,7 +69,6 @@ import androidx.compose.ui.window.Dialog
 import com.example.data.AppSettings
 import com.example.notifications.NotificationHelper
 import com.example.ui.components.GlassBadge
-import com.example.ui.components.GlassBannerAd
 import com.example.ui.components.GlassButton
 import com.example.ui.components.GlassCard
 import com.example.ui.components.GlassOutlineButton
@@ -807,12 +806,9 @@ fun SettingsScreen(
                 }
 
                 item {
-                    Spacer(modifier = Modifier.height(76.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
-
-            // Bottom Banner Ad
-            GlassBannerAd(modifier = Modifier.padding(bottom = 68.dp))
         }
 
         // Reset Confirmation Dialog

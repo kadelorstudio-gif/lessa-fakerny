@@ -59,6 +59,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val todayAttendance: StateFlow<List<AttendanceRecord>> = repository.getAttendanceForDate(todayDateString)
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val allAttendanceRecords: StateFlow<List<AttendanceRecord>> = repository.allAttendanceRecords
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     private val _nowMillis = MutableStateFlow(System.currentTimeMillis())
     val nowMillis: StateFlow<Long> = _nowMillis.asStateFlow()
 

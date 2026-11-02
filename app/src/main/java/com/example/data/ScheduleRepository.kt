@@ -28,6 +28,7 @@ class ScheduleRepository(
     val allLectures: Flow<List<Lecture>> = lectureDao.getAllLectures()
     val allExams: Flow<List<Exam>> = examDao.getAllExams()
     val settings: Flow<AppSettings?> = settingsDao.getSettings()
+    val allAttendanceRecords: Flow<List<AttendanceRecord>> = attendanceDao.getAllAttendanceRecords()
 
     fun getLecturesForDay(dayOfWeek: Int): Flow<List<Lecture>> = lectureDao.getLecturesForDay(dayOfWeek)
 

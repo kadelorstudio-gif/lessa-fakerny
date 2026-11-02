@@ -12,6 +12,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -39,13 +47,13 @@ import com.example.ui.components.GlassBottomNavBar
 import com.example.ui.screens.AddEditExamDialog
 import com.example.ui.screens.AddEditLectureDialog
 import com.example.ui.screens.AuthDialog
+import com.example.ui.screens.AttendanceStatsScreen
 import com.example.ui.screens.ExamsScreen
 import com.example.ui.screens.HomeScreen
 import com.example.ui.screens.MainViewModel
 import com.example.ui.screens.SettingsScreen
 import com.example.ui.screens.SplashScreen
 import com.example.ui.screens.TimetableScreen
-import com.example.ui.screens.UserProfileScreen
 import com.example.ui.theme.LessafakernyTheme
 import com.example.util.LocaleManager
 import com.google.firebase.FirebaseApp
@@ -60,13 +68,6 @@ class MainActivity : ComponentActivity() {
         try {
             FirebaseApp.initializeApp(this)
             NotificationHelper.createNotificationChannels(this)
-            Thread {
-                try {
-                    com.google.android.gms.ads.MobileAds.initialize(this) {}
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }.start()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -132,8 +133,21 @@ fun MainAppContent(viewModel: MainViewModel, defaultScreen: AppScreen = AppScree
 
     var showAuthDialog by remember { mutableStateOf(false) }
 
-    BackHandler(enabled = currentScreen != AppScreen.HOME) {
-        currentScreen = AppScreen.HOME
+    // Robust Back Handling: return to HOME first, and require double press on HOME to exit
+    var lastBackPressMillis by remember { mutableStateOf(0L) }
+    BackHandler {
+        if (currentScreen != AppScreen.HOME) {
+            currentScreen = AppScreen.HOME
+        } else {
+            val now = System.currentTimeMillis()
+            if (now - lastBackPressMillis < 2000L) {
+                (context as? ComponentActivity)?.finish()
+            } else {
+                lastBackPressMillis = now
+                val exitMsg = if (language == "en") "Press back again to exit" else "اضغط مرة أخرى للخروج من التطبيق"
+                android.widget.Toast.makeText(context, exitMsg, android.widget.Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     CompositionLocalProvider(LocalLayoutDirection provides layoutDirection) {
@@ -154,66 +168,79 @@ fun MainAppContent(viewModel: MainViewModel, defaultScreen: AppScreen = AppScree
                         .fillMaxSize()
                         .padding(innerPadding)
                 ) {
-                    when (currentScreen) {
-                        AppScreen.HOME -> HomeScreen(
-                            viewModel = viewModel,
-                            onNavigateToTimetable = { currentScreen = AppScreen.TIMETABLE },
-                            onAddLectureClick = {
-                                lectureToEdit = null
-                                initialDayForAddLecture = viewModel.currentTodayDayOfWeek
-                                showAddLectureDialog = true
-                            },
-                            onEditLectureClick = { lecture ->
-                                lectureToEdit = lecture
-                                initialDayForAddLecture = lecture.dayOfWeek
-                                showAddLectureDialog = true
-                            },
-                            strings = strings,
-                            language = language
-                        )
+                    AnimatedContent(
+                        targetState = currentScreen,
+                        transitionSpec = {
+                            (fadeIn(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)) +
+                             scaleIn(initialScale = 0.96f, animationSpec = spring(stiffness = Spring.StiffnessMediumLow)))
+                                .togetherWith(
+                                    fadeOut(animationSpec = spring(stiffness = Spring.StiffnessMediumLow)) +
+                                    scaleOut(targetScale = 1.02f, animationSpec = spring(stiffness = Spring.StiffnessMediumLow))
+                                )
+                        },
+                        label = "screen_transition"
+                    ) { targetScreen ->
+                        when (targetScreen) {
+                            AppScreen.HOME -> HomeScreen(
+                                viewModel = viewModel,
+                                onNavigateToTimetable = { currentScreen = AppScreen.TIMETABLE },
+                                onAddLectureClick = {
+                                    lectureToEdit = null
+                                    initialDayForAddLecture = viewModel.currentTodayDayOfWeek
+                                    showAddLectureDialog = true
+                                },
+                                onEditLectureClick = { lecture ->
+                                    lectureToEdit = lecture
+                                    initialDayForAddLecture = lecture.dayOfWeek
+                                    showAddLectureDialog = true
+                                },
+                                strings = strings,
+                                language = language
+                            )
 
-                        AppScreen.TIMETABLE -> TimetableScreen(
-                            viewModel = viewModel,
-                            onAddLectureClick = { day ->
-                                lectureToEdit = null
-                                initialDayForAddLecture = day
-                                showAddLectureDialog = true
-                            },
-                            onEditLectureClick = { lecture ->
-                                lectureToEdit = lecture
-                                initialDayForAddLecture = lecture.dayOfWeek
-                                showAddLectureDialog = true
-                            },
-                            strings = strings,
-                            language = language
-                        )
+                            AppScreen.TIMETABLE -> TimetableScreen(
+                                viewModel = viewModel,
+                                onAddLectureClick = { day ->
+                                    lectureToEdit = null
+                                    initialDayForAddLecture = day
+                                    showAddLectureDialog = true
+                                },
+                                onEditLectureClick = { lecture ->
+                                    lectureToEdit = lecture
+                                    initialDayForAddLecture = lecture.dayOfWeek
+                                    showAddLectureDialog = true
+                                },
+                                strings = strings,
+                                language = language
+                            )
 
-                        AppScreen.EXAMS -> ExamsScreen(
-                            viewModel = viewModel,
-                            onAddExamClick = {
-                                examToEdit = null
-                                showAddExamDialog = true
-                            },
-                            onEditExamClick = { exam ->
-                                examToEdit = exam
-                                showAddExamDialog = true
-                            },
-                            strings = strings,
-                            language = language
-                        )
+                            AppScreen.EXAMS -> ExamsScreen(
+                                viewModel = viewModel,
+                                onAddExamClick = {
+                                    examToEdit = null
+                                    showAddExamDialog = true
+                                },
+                                onEditExamClick = { exam ->
+                                    examToEdit = exam
+                                    showAddExamDialog = true
+                                },
+                                strings = strings,
+                                language = language
+                            )
 
-                        AppScreen.SETTINGS -> SettingsScreen(
-                            viewModel = viewModel,
-                            onOpenAuthDialog = { showAuthDialog = true },
-                            strings = strings,
-                            language = language
-                        )
+                            AppScreen.SETTINGS -> SettingsScreen(
+                                viewModel = viewModel,
+                                onOpenAuthDialog = { showAuthDialog = true },
+                                strings = strings,
+                                language = language
+                            )
 
-                        AppScreen.PROFILE -> UserProfileScreen(
-                            onOpenAuthDialog = { showAuthDialog = true },
-                            strings = strings,
-                            language = language
-                        )
+                            AppScreen.STATS -> AttendanceStatsScreen(
+                                viewModel = viewModel,
+                                strings = strings,
+                                language = language
+                            )
+                        }
                     }
                 }
             }

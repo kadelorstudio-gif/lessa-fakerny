@@ -194,14 +194,14 @@ fun AddEditLectureDialog(
                         Text(strings.startTimeLabel, color = TextSecondary, fontSize = 11.sp)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             GlassTextField(
-                                value = String.format("%02d", startHour),
+                                value = String.format(java.util.Locale.US, "%02d", startHour),
                                 onValueChange = { startHour = it.toIntOrNull()?.coerceIn(0, 23) ?: startHour },
                                 label = strings.hoursUnit,
                                 modifier = Modifier.weight(1f)
                             )
                             Text(":", color = SoftLavender, modifier = Modifier.padding(horizontal = 4.dp), fontWeight = FontWeight.Bold)
                             GlassTextField(
-                                value = String.format("%02d", startMinute),
+                                value = String.format(java.util.Locale.US, "%02d", startMinute),
                                 onValueChange = { startMinute = it.toIntOrNull()?.coerceIn(0, 59) ?: startMinute },
                                 label = strings.minutesUnit,
                                 modifier = Modifier.weight(1f)
@@ -213,14 +213,14 @@ fun AddEditLectureDialog(
                         Text(strings.endTimeLabel, color = TextSecondary, fontSize = 11.sp)
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             GlassTextField(
-                                value = String.format("%02d", endHour),
+                                value = String.format(java.util.Locale.US, "%02d", endHour),
                                 onValueChange = { endHour = it.toIntOrNull()?.coerceIn(0, 23) ?: endHour },
                                 label = strings.hoursUnit,
                                 modifier = Modifier.weight(1f)
                             )
                             Text(":", color = SoftLavender, modifier = Modifier.padding(horizontal = 4.dp), fontWeight = FontWeight.Bold)
                             GlassTextField(
-                                value = String.format("%02d", endMinute),
+                                value = String.format(java.util.Locale.US, "%02d", endMinute),
                                 onValueChange = { endMinute = it.toIntOrNull()?.coerceIn(0, 59) ?: endMinute },
                                 label = strings.minutesUnit,
                                 modifier = Modifier.weight(1f)

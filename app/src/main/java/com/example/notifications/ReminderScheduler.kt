@@ -119,14 +119,17 @@ object ReminderScheduler {
 
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+                        try {
+                            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+                        } catch (se: Exception) {
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+                        }
                     } else {
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
                     }
                     Log.d(TAG, "Scheduled lecture reminder $requestCode for ${lecture.subjectName} with tone $toneKey at $triggerTime")
-                } catch (e: SecurityException) {
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-                    Log.w(TAG, "Inexact fallback used for $requestCode", e)
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to schedule lecture alarm $requestCode", e)
                 }
             } else {
                 cancelAlarm(context, requestCode)
@@ -214,14 +217,17 @@ object ReminderScheduler {
 
                 try {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+                        try {
+                            alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+                        } catch (se: Exception) {
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+                        }
                     } else {
-                        alarmManager.setExact(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
                     }
                     Log.d(TAG, "Scheduled exam reminder $requestCode for ${exam.subjectName} with tone $toneKey at $triggerTime")
-                } catch (e: SecurityException) {
-                    alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-                    Log.w(TAG, "Inexact fallback used for $requestCode", e)
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to schedule exam alarm $requestCode", e)
                 }
             } else {
                 cancelAlarm(context, requestCode)

@@ -12,7 +12,7 @@ data class AppStrings(
     val navTimetable: String,
     val navExams: String,
     val navSettings: String,
-    val navProfile: String,
+    val navStats: String,
 
     // Profile Screen
     val profileHeaderTitle: String,
@@ -194,7 +194,7 @@ object LocaleManager {
         navTimetable = "الجدول",
         navExams = "الامتحانات",
         navSettings = "الإعدادات",
-        navProfile = "الملف",
+        navStats = "الإحصائيات",
         profileHeaderTitle = "الملف الشخصي والحساب 👤",
         profileHeaderSubtitle = "إدارة بيانات حسابك السحابي وحالة المصادقة",
         emailAddressLabel = "البريد الإلكتروني:",
@@ -353,7 +353,7 @@ object LocaleManager {
         navTimetable = "Timetable",
         navExams = "Exams",
         navSettings = "Settings",
-        navProfile = "Profile",
+        navStats = "Stats",
         profileHeaderTitle = "User Profile & Account 👤",
         profileHeaderSubtitle = "Manage your cloud account details and authentication status",
         emailAddressLabel = "Email Address:",
