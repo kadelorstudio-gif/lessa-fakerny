@@ -40,7 +40,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -133,6 +135,25 @@ fun HomeScreen(
         }
     }
 
+    val currentUser by viewModel.currentUser.collectAsState()
+    val settings by viewModel.settings.collectAsState()
+    val is24Hour = settings?.is24HourFormat ?: false
+    val userRole = settings?.userRole ?: "STUDENT"
+
+    var showProfileDialog by remember { mutableStateOf(false) }
+
+    if (showProfileDialog) {
+        UserProfileDialog(
+            user = currentUser,
+            userRole = userRole,
+            strings = strings,
+            language = language,
+            onDismiss = { showProfileDialog = false },
+            onOpenAuth = { showProfileDialog = true },
+            onLogout = { viewModel.syncWithCloud() }
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -142,38 +163,67 @@ fun HomeScreen(
         ) {
             Spacer(modifier = Modifier.height(14.dp))
 
-            // 1. Header with greeting and date
+            // 1. Header with greeting, profile icon, and date
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = greeting,
-                        color = NeonCyan,
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    val dateFormat = try {
-                        if (isEn) {
-                            SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH)
-                        } else {
-                            SimpleDateFormat("EEEE, d MMMM yyyy", Locale("ar"))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(42.dp)
+                            .clip(CircleShape)
+                            .background(
+                                Brush.linearGradient(
+                                    listOf(NeonCyan.copy(alpha = 0.25f), NeonViolet.copy(alpha = 0.3f))
+                                )
+                            )
+                            .border(BorderStroke(1.2.dp, NeonCyan), CircleShape)
+                            .clickable { showProfileDialog = true }
+                            .testTag("home_profile_icon"),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Profile",
+                            tint = NeonCyan,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Column {
+                        Text(
+                            text = greeting,
+                            color = NeonCyan,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        val dateFormat = try {
+                            if (isEn) {
+                                SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH)
+                            } else {
+                                SimpleDateFormat("EEEE, d MMMM yyyy", Locale("ar"))
+                            }
+                        } catch (e: Exception) {
+                            SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault())
                         }
-                    } catch (e: Exception) {
-                        SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault())
+                        val formattedDate = try {
+                            dateFormat.format(calendar.time)
+                        } catch (e: Exception) {
+                            ""
+                        }
+                        Text(
+                            text = formattedDate,
+                            color = TextSecondary,
+                            fontSize = 11.sp
+                        )
                     }
-                    val formattedDate = try {
-                        dateFormat.format(calendar.time)
-                    } catch (e: Exception) {
-                        ""
-                    }
-                    Text(
-                        text = formattedDate,
-                        color = TextSecondary,
-                        fontSize = 12.sp
-                    )
                 }
 
                 // Attendance ratio badge for today
@@ -205,7 +255,9 @@ fun HomeScreen(
                 },
                 onNavigateToTimetable = onNavigateToTimetable,
                 strings = strings,
-                isEn = isEn
+                isEn = isEn,
+                is24Hour = is24Hour,
+                language = language
             )
 
             Spacer(modifier = Modifier.height(18.dp))
@@ -330,7 +382,9 @@ fun HomeScreen(
                             onEdit = { onEditLectureClick(lecture) },
                             onDelete = { viewModel.deleteLecture(lecture) },
                             strings = strings,
-                            isEn = isEn
+                            isEn = isEn,
+                            is24Hour = is24Hour,
+                            language = language
                         )
                     }
 
@@ -408,7 +462,9 @@ fun LectureClockHeroCard(
     onToggleAttendance: (Lecture) -> Unit,
     onNavigateToTimetable: () -> Unit,
     strings: AppStrings,
-    isEn: Boolean
+    isEn: Boolean,
+    is24Hour: Boolean = false,
+    language: String = "ar"
 ) {
     if (ongoingLecture == null && nextLecture == null) {
         GlassCard(
@@ -504,7 +560,7 @@ fun LectureClockHeroCard(
                 )
 
                 Text(
-                    text = "${activeLecture.formatStartTime()} - ${activeLecture.formatEndTime()}",
+                    text = "${activeLecture.formatStartTime(is24Hour, language)} - ${activeLecture.formatEndTime(is24Hour, language)}",
                     color = SoftLavender,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
@@ -651,7 +707,9 @@ fun TodayLectureItemCard(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     strings: AppStrings,
-    isEn: Boolean
+    isEn: Boolean,
+    is24Hour: Boolean = false,
+    language: String = "ar"
 ) {
     val statusLabel = when {
         isOngoing -> if (isEn) "Active Now ⚡" else "جارية الآن ⚡"
@@ -726,7 +784,7 @@ fun TodayLectureItemCard(
                 Icon(imageVector = Icons.Default.Schedule, contentDescription = null, tint = cardColor, modifier = Modifier.size(15.dp))
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "${lecture.formatStartTime()} - ${lecture.formatEndTime()}",
+                    text = "${lecture.formatStartTime(is24Hour, language)} - ${lecture.formatEndTime(is24Hour, language)}",
                     color = cardColor,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold

@@ -50,6 +50,7 @@ import app.lessafakerny.android.ui.screens.AuthDialog
 import app.lessafakerny.android.ui.screens.AttendanceStatsScreen
 import app.lessafakerny.android.ui.screens.ExamsScreen
 import app.lessafakerny.android.ui.screens.HomeScreen
+import app.lessafakerny.android.ui.screens.LearnScreen
 import app.lessafakerny.android.ui.screens.MainViewModel
 import app.lessafakerny.android.ui.screens.SettingsScreen
 import app.lessafakerny.android.ui.screens.SplashScreen
@@ -81,7 +82,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         setContent {
-            LessafakernyTheme {
+            val settingsState by viewModel.settings.collectAsState()
+            val activeThemeId = settingsState?.activeThemeId ?: "NEON_MIDNIGHT"
+
+            LessafakernyTheme(activeThemeId = activeThemeId) {
                 var isSplashActive by remember { mutableStateOf(targetScreenExtra == null) }
 
                 if (isSplashActive) {
@@ -226,6 +230,10 @@ fun MainAppContent(viewModel: MainViewModel, defaultScreen: AppScreen = AppScree
                                 },
                                 strings = strings,
                                 language = language
+                            )
+
+                            AppScreen.LEARN -> LearnScreen(
+                                viewModel = viewModel
                             )
 
                             AppScreen.SETTINGS -> SettingsScreen(

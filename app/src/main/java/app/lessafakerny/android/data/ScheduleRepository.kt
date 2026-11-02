@@ -24,16 +24,24 @@ class ScheduleRepository(
     val examDao = db.examDao()
     val settingsDao = db.appSettingsDao()
     val attendanceDao = db.attendanceDao()
+    val learningMaterialDao = db.learningMaterialDao()
 
     val allLectures: Flow<List<Lecture>> = lectureDao.getAllLectures()
     val allExams: Flow<List<Exam>> = examDao.getAllExams()
     val settings: Flow<AppSettings?> = settingsDao.getSettings()
     val allAttendanceRecords: Flow<List<AttendanceRecord>> = attendanceDao.getAllAttendanceRecords()
+    val allMaterials: Flow<List<LearningMaterial>> = learningMaterialDao.getAllMaterials()
 
     fun getLecturesForDay(dayOfWeek: Int): Flow<List<Lecture>> = lectureDao.getLecturesForDay(dayOfWeek)
 
     fun getAttendanceForDate(dateString: String): Flow<List<AttendanceRecord>> =
         attendanceDao.getAttendanceForDate(dateString)
+
+    suspend fun addMaterial(material: LearningMaterial): Long =
+        learningMaterialDao.insertMaterial(material)
+
+    suspend fun deleteMaterial(material: LearningMaterial) =
+        learningMaterialDao.deleteMaterial(material)
 
     suspend fun initDefaultDataIfEmpty() {
         val currentSettings = settings.firstOrNull()
@@ -125,6 +133,7 @@ class ScheduleRepository(
         lectureDao.getAllLectures().firstOrNull()?.forEach { lectureDao.deleteLecture(it) }
         examDao.getAllExams().firstOrNull()?.forEach { examDao.deleteExam(it) }
         attendanceDao.clearAll()
+        learningMaterialDao.clearAll()
     }
 
     private fun deleteLectureFromCloud(lectureId: Long) {

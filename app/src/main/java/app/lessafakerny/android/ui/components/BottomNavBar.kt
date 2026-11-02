@@ -49,8 +49,10 @@ import app.lessafakerny.android.ui.theme.SurfaceElevated
 import app.lessafakerny.android.ui.theme.TextMuted
 import app.lessafakerny.android.ui.theme.TextPrimary
 
+import androidx.compose.material.icons.filled.MenuBook
+
 enum class AppScreen {
-    HOME, TIMETABLE, EXAMS, STATS, SETTINGS
+    HOME, TIMETABLE, EXAMS, LEARN, STATS, SETTINGS
 }
 
 @Composable
@@ -73,8 +75,8 @@ fun GlassBottomNavBar(
         modifier = modifier
             .fillMaxWidth()
             .navigationBarsPadding()
-            .padding(horizontal = 14.dp, vertical = 8.dp)
-            .height(68.dp)
+            .padding(horizontal = 8.dp, vertical = 6.dp)
+            .height(66.dp)
             .shadow(
                 elevation = 20.dp,
                 shape = RoundedCornerShape(34.dp),
@@ -111,7 +113,7 @@ fun GlassBottomNavBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.Center)
-                .padding(horizontal = 4.dp),
+                .padding(horizontal = 2.dp),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -140,6 +142,15 @@ fun GlassBottomNavBar(
                 isSelected = currentScreen == AppScreen.EXAMS,
                 accentColor = NeonViolet,
                 onClick = { onScreenSelected(AppScreen.EXAMS) }
+            )
+
+            NavBarItem(
+                screen = AppScreen.LEARN,
+                title = strings.navLearn,
+                icon = Icons.Default.MenuBook,
+                isSelected = currentScreen == AppScreen.LEARN,
+                accentColor = NeonCyan,
+                onClick = { onScreenSelected(AppScreen.LEARN) }
             )
 
             NavBarItem(

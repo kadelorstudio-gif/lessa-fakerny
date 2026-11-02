@@ -20,5 +20,7 @@ data class AppSettings(
     val vibrationEnabled: Boolean = true,
     val language: String = "ar", // "ar" or "en"
     val activeThemeId: String = "NEON_MIDNIGHT",
-    val unlockedThemeIds: String = "NEON_MIDNIGHT"
+    val unlockedThemeIds: String = "NEON_MIDNIGHT",
+    val is24HourFormat: Boolean = false,
+    val userRole: String = "STUDENT" // "STUDENT" or "DOCTOR"
 )

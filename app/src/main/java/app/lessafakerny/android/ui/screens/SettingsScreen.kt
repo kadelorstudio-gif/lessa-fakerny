@@ -120,6 +120,23 @@ fun SettingsScreen(
         currentSettings.unlockedThemeIds.split(",").map { it.trim() }.toSet()
     }
 
+    var showProfileDialog by remember { mutableStateOf(false) }
+
+    if (showProfileDialog) {
+        UserProfileDialog(
+            user = firebaseUser,
+            userRole = currentSettings.userRole,
+            strings = strings,
+            language = language,
+            onDismiss = { showProfileDialog = false },
+            onOpenAuth = {
+                showProfileDialog = false
+                onOpenAuthDialog()
+            },
+            onLogout = { viewModel.syncWithCloud() }
+        )
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -130,17 +147,43 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(14.dp))
 
             // Screen Header
-            Text(
-                text = strings.settingsHeaderTitle,
-                color = NeonCyan,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = strings.settingsHeaderSubtitle,
-                color = TextSecondary,
-                fontSize = 12.sp
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = strings.settingsHeaderTitle,
+                        color = NeonCyan,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = strings.settingsHeaderSubtitle,
+                        color = TextSecondary,
+                        fontSize = 12.sp
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(NeonCyan.copy(alpha = 0.2f))
+                        .border(BorderStroke(1.2.dp, NeonCyan), CircleShape)
+                        .clickable { showProfileDialog = true }
+                        .testTag("settings_profile_btn"),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Profile",
+                        tint = NeonCyan,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -214,6 +257,130 @@ fun SettingsScreen(
                                     Text(strings.logoutButtonLabel, fontWeight = FontWeight.Bold, color = Color.White)
                                 }
                             }
+                        }
+                    }
+                }
+
+                // 1.5 User Role Selection Card (Student vs Doctor/Lecturer)
+                item {
+                    GlassCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        tintColor = NeonCyan,
+                        shape = RoundedCornerShape(22.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = strings.roleSectionTitle,
+                                color = TextPrimary,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                val isStudent = currentSettings.userRole != "DOCTOR"
+
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(if (isStudent) NeonCyan.copy(alpha = 0.2f) else SurfaceElevated)
+                                        .border(
+                                            BorderStroke(1.dp, if (isStudent) NeonCyan else GlassBorder),
+                                            RoundedCornerShape(14.dp)
+                                        )
+                                        .clickable { viewModel.updateUserRole("STUDENT") }
+                                        .padding(12.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Text(
+                                            text = strings.roleStudentLabel,
+                                            color = if (isStudent) NeonCyan else TextPrimary,
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Text(
+                                            text = strings.roleStudentDesc,
+                                            color = TextMuted,
+                                            fontSize = 10.sp,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                    }
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(if (!isStudent) NeonViolet.copy(alpha = 0.2f) else SurfaceElevated)
+                                        .border(
+                                            BorderStroke(1.dp, if (!isStudent) NeonViolet else GlassBorder),
+                                            RoundedCornerShape(14.dp)
+                                        )
+                                        .clickable { viewModel.updateUserRole("DOCTOR") }
+                                        .padding(12.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Text(
+                                            text = strings.roleDoctorLabel,
+                                            color = if (!isStudent) NeonViolet else TextPrimary,
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        Text(
+                                            text = strings.roleDoctorDesc,
+                                            color = TextMuted,
+                                            fontSize = 10.sp,
+                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 1.8 Time Format Toggle Card (12h vs 24h)
+                item {
+                    GlassCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        tintColor = NeonBlue,
+                        shape = RoundedCornerShape(22.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = strings.timeFormatTitle,
+                                    color = TextPrimary,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = if (currentSettings.is24HourFormat) strings.timeFormat24hLabel else strings.timeFormat12hLabel,
+                                    color = SoftLavender,
+                                    fontSize = 11.sp
+                                )
+                            }
+
+                            Switch(
+                                checked = currentSettings.is24HourFormat,
+                                onCheckedChange = { viewModel.updateTimeFormat(it) },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = Color(0xFF050816),
+                                    checkedTrackColor = NeonBlue
+                                )
+                            )
                         }
                     }
                 }

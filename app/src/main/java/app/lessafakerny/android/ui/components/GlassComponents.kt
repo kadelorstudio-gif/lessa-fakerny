@@ -82,28 +82,10 @@ fun GlassBackground(
     themeId: String = "NEON_MIDNIGHT",
     content: @Composable BoxScope.() -> Unit
 ) {
-    val (glowTop, glowBottom, glowMiddle) = when (themeId) {
-        "SAPPHIRE_FROST" -> Triple(
-            NeonBlue.copy(alpha = 0.28f),
-            NeonCyan.copy(alpha = 0.22f),
-            SoftLavender.copy(alpha = 0.12f)
-        )
-        "EMERALD_GLOW" -> Triple(
-            Color(0xFF35D6A0).copy(alpha = 0.26f),
-            NeonCyan.copy(alpha = 0.20f),
-            NeonBlue.copy(alpha = 0.12f)
-        )
-        "AMETHYST_SUNSET" -> Triple(
-            NeonMagenta.copy(alpha = 0.28f),
-            NeonViolet.copy(alpha = 0.22f),
-            NeonCyan.copy(alpha = 0.12f)
-        )
-        else -> Triple(
-            NeonViolet.copy(alpha = 0.25f),
-            NeonCyan.copy(alpha = 0.22f),
-            NeonMagenta.copy(alpha = 0.14f)
-        )
-    }
+    val palette = app.lessafakerny.android.ui.theme.getThemePalette(themeId)
+    val glowTop = palette.glowTop
+    val glowBottom = palette.glowBottom
+    val glowMiddle = palette.glowMiddle
 
     val infiniteTransition = rememberInfiniteTransition(label = "ambient_glow")
     val pulseOffset by infiniteTransition.animateFloat(
@@ -131,7 +113,7 @@ fun GlassBackground(
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(BgMain, BgSecondary, BgMain)
+                    colors = listOf(palette.bgMain, palette.bgSecondary, palette.bgMain)
                 )
             )
     ) {
@@ -677,6 +659,36 @@ fun GlassNativeAdCard(
 }
 
 /**
+ * Header with neon title and glow subtitle.
+ */
+@Composable
+fun GlowHeader(
+    title: String,
+    subtitle: String,
+    modifier: Modifier = Modifier,
+    neonColor: Color = NeonCyan
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 18.dp, vertical = 14.dp)
+    ) {
+        Text(
+            text = title,
+            color = neonColor,
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = subtitle,
+            color = TextSecondary,
+            fontSize = 12.sp
+        )
+    }
+}
+
+/**
  * Bottom sticky banner ad container with fine glass border.
  */
 @Composable
@@ -704,3 +716,4 @@ fun GlassBannerAd(
         )
     }
 }
+

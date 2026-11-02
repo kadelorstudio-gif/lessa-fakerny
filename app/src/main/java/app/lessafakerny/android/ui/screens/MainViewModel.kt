@@ -21,11 +21,23 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+import app.lessafakerny.android.data.LearningMaterial
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: ScheduleRepository = ScheduleRepository(
         application.applicationContext,
         AppDatabase.getDatabase(application)
     )
+
+    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val _currentUser = MutableStateFlow<FirebaseUser?>(auth.currentUser)
+    val currentUser: StateFlow<FirebaseUser?> = _currentUser.asStateFlow()
+
+    private val authStateListener = FirebaseAuth.AuthStateListener { firebaseAuth ->
+        _currentUser.value = firebaseAuth.currentUser
+    }
 
     val currentTodayDayOfWeek: Int
         get() {
@@ -53,6 +65,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val allExams: StateFlow<List<Exam>> = repository.allExams
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    val allMaterials: StateFlow<List<LearningMaterial>> = repository.allMaterials
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
     val settings: StateFlow<AppSettings?> = repository.settings
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), null)
 
@@ -66,10 +81,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val nowMillis: StateFlow<Long> = _nowMillis.asStateFlow()
 
     init {
+        try {
+            auth.addAuthStateListener(authStateListener)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         viewModelScope.launch {
             repository.initDefaultDataIfEmpty()
         }
         startCountdownTicker()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        try {
+            auth.removeAuthStateListener(authStateListener)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun startCountdownTicker() {
@@ -160,6 +189,48 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun updateSettings(newSettings: AppSettings) {
         viewModelScope.launch {
             repository.saveSettings(newSettings)
+        }
+    }
+
+    fun updateTimeFormat(is24Hour: Boolean) {
+        viewModelScope.launch {
+            val current = settings.value ?: AppSettings()
+            repository.saveSettings(current.copy(is24HourFormat = is24Hour))
+        }
+    }
+
+    fun updateUserRole(role: String) {
+        viewModelScope.launch {
+            val current = settings.value ?: AppSettings()
+            repository.saveSettings(current.copy(userRole = role))
+        }
+    }
+
+    fun addOrUpdateMaterial(
+        id: Long = 0,
+        title: String,
+        subjectName: String,
+        content: String,
+        resourceLink: String = "",
+        authorRole: String = "STUDENT"
+    ) {
+        viewModelScope.launch {
+            val material = LearningMaterial(
+                id = id,
+                title = title,
+                subjectName = subjectName,
+                content = content,
+                resourceLink = resourceLink,
+                addedDateMillis = System.currentTimeMillis(),
+                authorRole = authorRole
+            )
+            repository.addMaterial(material)
+        }
+    }
+
+    fun deleteMaterial(material: LearningMaterial) {
+        viewModelScope.launch {
+            repository.deleteMaterial(material)
         }
     }
 

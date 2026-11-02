@@ -82,6 +82,8 @@ fun TimetableScreen(
 ) {
     val selectedDay by viewModel.selectedTimetableDay.collectAsState()
     val allLectures by viewModel.allLectures.collectAsState()
+    val settings by viewModel.settings.collectAsState()
+    val is24Hour = settings?.is24HourFormat ?: false
     val todayDay = viewModel.currentTodayDayOfWeek
     val isEn = language.equals("en", ignoreCase = true)
 
@@ -282,7 +284,9 @@ fun TimetableScreen(
                             isOverlapping = isOverlapping,
                             onEdit = { onEditLectureClick(lecture) },
                             onDelete = { lectureToDelete = lecture },
-                            strings = strings
+                            strings = strings,
+                            is24Hour = is24Hour,
+                            language = language
                         )
                     }
 
@@ -467,7 +471,9 @@ fun TimetableLectureItem(
     isOverlapping: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
-    strings: AppStrings
+    strings: AppStrings,
+    is24Hour: Boolean = false,
+    language: String = "ar"
 ) {
     GlassCard(
         modifier = Modifier.fillMaxWidth(),
@@ -528,7 +534,7 @@ fun TimetableLectureItem(
                 Icon(imageVector = Icons.Default.Schedule, contentDescription = null, tint = cardColor, modifier = Modifier.size(15.dp))
                 Spacer(modifier = Modifier.width(6.dp))
                 Text(
-                    text = "${lecture.formatStartTime()} - ${lecture.formatEndTime()}",
+                    text = "${lecture.formatStartTime(is24Hour, language)} - ${lecture.formatEndTime(is24Hour, language)}",
                     color = cardColor,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold

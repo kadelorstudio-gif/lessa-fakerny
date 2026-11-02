@@ -75,6 +75,8 @@ fun ExamsScreen(
     language: String = "ar"
 ) {
     val allExams by viewModel.allExams.collectAsState()
+    val settings by viewModel.settings.collectAsState()
+    val is24Hour = settings?.is24HourFormat ?: false
     val nowMillis by viewModel.nowMillis.collectAsState()
     val isEn = language.equals("en", ignoreCase = true)
 
@@ -194,7 +196,9 @@ fun ExamsScreen(
                             onEdit = { onEditExamClick(exam) },
                             onDelete = { examToDelete = exam },
                             strings = strings,
-                            isEn = isEn
+                            isEn = isEn,
+                            is24Hour = is24Hour,
+                            language = language
                         )
                     }
                 }
@@ -286,7 +290,9 @@ fun ExamCountdownCardItem(
     onEdit: () -> Unit,
     onDelete: () -> Unit,
     strings: AppStrings,
-    isEn: Boolean
+    isEn: Boolean,
+    is24Hour: Boolean = false,
+    language: String = "ar"
 ) {
     val examDate = exam.examDateMillis
     val diffMillis = (examDate - nowMillis).coerceAtLeast(0L)
@@ -298,17 +304,7 @@ fun ExamCountdownCardItem(
     val mins = (totalSecs % 3600L) / 60L
     val secs = totalSecs % 60L
 
-    val formattedDate = try {
-        if (examDate > 0L) {
-            val pattern = "EEEE, d MMMM yyyy • hh:mm a"
-            val locale = if (isEn) Locale.ENGLISH else Locale("ar")
-            SimpleDateFormat(pattern, locale).format(Date(examDate))
-        } else {
-            ""
-        }
-    } catch (e: Exception) {
-        ""
-    }
+    val formattedDate = app.lessafakerny.android.util.formatExamTime(examDate, is24Hour, language)
 
     val isUrgent = !isPast && examDate > 0L && days <= 3
 

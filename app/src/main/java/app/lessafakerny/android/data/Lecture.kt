@@ -20,18 +20,9 @@ data class Lecture(
 ) {
     constructor() : this(0, "", "", "", "", 1, 0, 0, "#00E5FF", "", false, false)
 
-    fun formatStartTime(): String = formatMinutes(startTimeMinutes)
-    fun formatEndTime(): String = formatMinutes(endTimeMinutes)
+    fun formatStartTime(is24Hour: Boolean = false, language: String = "ar"): String =
+        app.lessafakerny.android.util.formatTimeMinutes(startTimeMinutes, is24Hour, language)
 
-    private fun formatMinutes(minutes: Int): String {
-        val hours24 = minutes / 60
-        val mins = minutes % 60
-        val amPm = if (hours24 >= 12) "م" else "ص"
-        val hours12 = when {
-            hours24 == 0 -> 12
-            hours24 > 12 -> hours24 - 12
-            else -> hours24
-        }
-        return String.format(java.util.Locale.US, "%02d:%02d %s", hours12, mins, amPm)
-    }
+    fun formatEndTime(is24Hour: Boolean = false, language: String = "ar"): String =
+        app.lessafakerny.android.util.formatTimeMinutes(endTimeMinutes, is24Hour, language)
 }

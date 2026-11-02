@@ -183,7 +183,36 @@ data class AppStrings(
     val previewPlaying: String,
     val previewPlay: String,
     val previewStop: String,
-    val selectedToneBadge: String
+    val selectedToneBadge: String,
+
+    // Learn Section
+    val navLearn: String,
+    val learnHeaderTitle: String,
+    val learnHeaderSubtitle: String,
+    val emptyLearnTitle: String,
+    val emptyLearnSubtitle: String,
+    val addMaterialBtn: String,
+    val addMaterialTitle: String,
+    val materialTitleLabel: String,
+    val materialTitlePlaceholder: String,
+    val materialSubjectLabel: String,
+    val materialSubjectPlaceholder: String,
+    val materialContentLabel: String,
+    val materialContentPlaceholder: String,
+    val materialLinkLabel: String,
+    val materialLinkPlaceholder: String,
+    val deleteMaterialTitle: String,
+    val deleteMaterialMessage: String,
+
+    // User Role & Time Format
+    val roleSectionTitle: String,
+    val roleStudentLabel: String,
+    val roleDoctorLabel: String,
+    val roleStudentDesc: String,
+    val roleDoctorDesc: String,
+    val timeFormatTitle: String,
+    val timeFormat12hLabel: String,
+    val timeFormat24hLabel: String
 )
 
 object LocaleManager {
@@ -343,7 +372,32 @@ object LocaleManager {
         previewPlaying = "جاري الاستماع...",
         previewPlay = "تشغيل",
         previewStop = "إيقاف",
-        selectedToneBadge = "النغمة الحالية"
+        selectedToneBadge = "النغمة الحالية",
+        navLearn = "التعلم",
+        learnHeaderTitle = "المحتوى التعليمي والمصادر 📖",
+        learnHeaderSubtitle = "ملخصات المحاضرات والروابط التعليمية المهمة لموادك الدراسية",
+        emptyLearnTitle = "لا يوجد محتوى تعليمي مضاف حتى الآن",
+        emptyLearnSubtitle = "يمكنك إضافة ملخصات أو روابط محاضرات بالضغط على زر إضافة محتوى",
+        addMaterialBtn = "إضافة محتوى تعليمي",
+        addMaterialTitle = "إضافة ملخص / درس جديد 📝",
+        materialTitleLabel = "عنوان الدرس / الملخص *",
+        materialTitlePlaceholder = "مثال: ملخص الفصل الأول في البرمجة",
+        materialSubjectLabel = "المادة الدراسية *",
+        materialSubjectPlaceholder = "مثال: البرمجة بلغة Kotlin",
+        materialContentLabel = "محتوى الشرح / الملاحظات",
+        materialContentPlaceholder = "اكتب هنا أهم النقاط والملاحظات والملخصات...",
+        materialLinkLabel = "رابط المصدر / الملف (اختياري)",
+        materialLinkPlaceholder = "https://drive.google.com/...",
+        deleteMaterialTitle = "حذف المحتوى التعليمي",
+        deleteMaterialMessage = "هل أنت متأكد من حذف هذا الدرس / الملخص؟",
+        roleSectionTitle = "صفة المستخدم (الدور الاكاديمي)",
+        roleStudentLabel = "طالب جامعي 🎓",
+        roleDoctorLabel = "دكتور / محاضر 👨‍🏫",
+        roleStudentDesc = "متابعة جداول المحاضرات وسجلات الحضور والامتحانات",
+        roleDoctorDesc = "تنظيم جداول المحاضرات التي تدرسها وإدارة الطلاب",
+        timeFormatTitle = "صيغة عرض الوقت",
+        timeFormat12hLabel = "12 ساعة (02:30 PM)",
+        timeFormat24hLabel = "24 ساعة (14:30)"
     )
 
     val ENGLISH = AppStrings(
@@ -502,7 +556,32 @@ object LocaleManager {
         previewPlaying = "Playing tone...",
         previewPlay = "Play",
         previewStop = "Stop",
-        selectedToneBadge = "Selected Tone"
+        selectedToneBadge = "Selected Tone",
+        navLearn = "Learn",
+        learnHeaderTitle = "Educational Content & Resources 📖",
+        learnHeaderSubtitle = "Lecture notes, summaries, and learning links for your courses",
+        emptyLearnTitle = "No educational materials added yet",
+        emptyLearnSubtitle = "Tap the add button to add lecture summaries or resource links",
+        addMaterialBtn = "Add Learning Material",
+        addMaterialTitle = "Add New Note / Lesson 📝",
+        materialTitleLabel = "Topic / Title *",
+        materialTitlePlaceholder = "e.g. Chapter 1 Summary",
+        materialSubjectLabel = "Subject / Course *",
+        materialSubjectPlaceholder = "e.g. Kotlin Programming",
+        materialContentLabel = "Notes & Detailed Summary",
+        materialContentPlaceholder = "Write key takeaways, notes, and definitions here...",
+        materialLinkLabel = "Resource / Reference Link (Optional)",
+        materialLinkPlaceholder = "https://drive.google.com/...",
+        deleteMaterialTitle = "Delete Content",
+        deleteMaterialMessage = "Are you sure you want to delete this summary / material?",
+        roleSectionTitle = "User Role",
+        roleStudentLabel = "University Student 🎓",
+        roleDoctorLabel = "Doctor / Lecturer 👨‍🏫",
+        roleStudentDesc = "Track lectures, attendance records, and exams",
+        roleDoctorDesc = "Manage taught lecture schedules and course materials",
+        timeFormatTitle = "Time Display Format",
+        timeFormat12hLabel = "12-Hour (02:30 PM)",
+        timeFormat24hLabel = "24-Hour (14:30)"
     )
 
     fun getStrings(lang: String): AppStrings {
