@@ -42,7 +42,39 @@ jobs:
           elif [ -f app/google-services.json ]; then
             echo "Using existing app/google-services.json found in repository."
           else
-            echo "Notice: app/google-services.json not found and FIREBASE_JSON_BASE64 secret is not set. Proceeding with build..."
+            echo "Creating default app/google-services.json for CI build..."
+            cat << 'EOF' > app/google-services.json
+{
+  "project_info": {
+    "project_number": "247548670509",
+    "project_id": "lessa-fakerny",
+    "storage_bucket": "lessa-fakerny.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:247548670509:android:f40b3204e470fa17283ea4",
+        "android_client_info": {
+          "package_name": "app.lessafakerny.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "247548670509-7flpquvd9l60pc1jvrcjpmgemadbba1h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWkpT24SASeuUgHJYmMv9j-itF7JNuceU"
+        }
+      ],
+      "services": {}
+    }
+  ],
+  "configuration_version": "1"
+}
+EOF
           fi
 
       - name: Setup debug keystore
