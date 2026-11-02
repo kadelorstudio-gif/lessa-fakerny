@@ -1,10 +1,6 @@
-name: Build Android APK
+name: Build Debug APK
 
 on:
-  push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
   workflow_dispatch:
 
 permissions:
@@ -19,50 +15,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
-          cache: gradle
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+          java-version: '17'
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Setup google-services.json
-        env:
-          FIREBASE_JSON_BASE64: ${{ secrets.FIREBASE_JSON_BASE64 }}
-          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
-        run: |
-          if [ -n "$FIREBASE_JSON_BASE64" ]; then
-            echo "Decoding FIREBASE_JSON_BASE64 secret..."
-            echo "$FIREBASE_JSON_BASE64" | base64 -d > app/google-services.json
-          elif [ -n "$GOOGLE_SERVICES_JSON" ]; then
-            echo "Writing GOOGLE_SERVICES_JSON secret..."
-            echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
-          elif [ ! -f app/google-services.json ]; then
-            echo "Creating default app/google-services.json..."
-            printf '{"project_info":{"project_number":"247548670509","project_id":"lessa-fakerny","storage_bucket":"lessa-fakerny.firebasestorage.app"},"client":[{"client_info":{"mobilesdk_app_id":"1:247548670509:android:f40b3204e470fa17283ea4","android_client_info":{"package_name":"app.lessafakerny.android"}},"oauth_client":[{"client_id":"247548670509-7flpquvd9l60pc1jvrcjpmgemadbba1h.apps.googleusercontent.com","client_type":3}],"api_key":[{"current_key":"AIzaSyAWkpT24SASeuUgHJYmMv9j-itF7JNuceU"}],"services":{}}],"configuration_version":"1"}' > app/google-services.json
-          fi
+      - name: Build debug APK
+        run: ./gradlew assembleDebug
 
-      - name: Setup debug keystore
-        run: |
-          if [ -f debug.keystore.base64 ] && [ ! -f debug.keystore ]; then
-            echo "Decoding debug.keystore from base64..."
-            base64 -d debug.keystore.base64 > debug.keystore
-          fi
-          if [ ! -f debug.keystore ]; then
-            echo "Creating standard debug keystore..."
-            keytool -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
-          fi
-
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
-
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: lessafakerny-debug-apk
