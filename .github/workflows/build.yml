@@ -19,11 +19,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Java
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
+          cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Make gradlew executable
         run: chmod +x ./gradlew
@@ -34,47 +38,14 @@ jobs:
           GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: |
           if [ -n "$FIREBASE_JSON_BASE64" ]; then
-            echo "Decoding FIREBASE_JSON_BASE64 secret into app/google-services.json..."
+            echo "Decoding FIREBASE_JSON_BASE64 secret..."
             echo "$FIREBASE_JSON_BASE64" | base64 -d > app/google-services.json
           elif [ -n "$GOOGLE_SERVICES_JSON" ]; then
-            echo "Writing GOOGLE_SERVICES_JSON secret into app/google-services.json..."
-            echo "$GOOGLE_SERVICES_JSON" | base64 -d > app/google-services.json 2>/dev/null || echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
-          elif [ -f app/google-services.json ]; then
-            echo "Using existing app/google-services.json found in repository."
-          else
-            echo "Creating default app/google-services.json for CI build..."
-            cat << 'EOF' > app/google-services.json
-{
-  "project_info": {
-    "project_number": "247548670509",
-    "project_id": "lessa-fakerny",
-    "storage_bucket": "lessa-fakerny.firebasestorage.app"
-  },
-  "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:247548670509:android:f40b3204e470fa17283ea4",
-        "android_client_info": {
-          "package_name": "app.lessafakerny.android"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "247548670509-7flpquvd9l60pc1jvrcjpmgemadbba1h.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAWkpT24SASeuUgHJYmMv9j-itF7JNuceU"
-        }
-      ],
-      "services": {}
-    }
-  ],
-  "configuration_version": "1"
-}
-EOF
+            echo "Writing GOOGLE_SERVICES_JSON secret..."
+            echo "$GOOGLE_SERVICES_JSON" > app/google-services.json
+          elif [ ! -f app/google-services.json ]; then
+            echo "Creating default app/google-services.json..."
+            printf '{"project_info":{"project_number":"247548670509","project_id":"lessa-fakerny","storage_bucket":"lessa-fakerny.firebasestorage.app"},"client":[{"client_info":{"mobilesdk_app_id":"1:247548670509:android:f40b3204e470fa17283ea4","android_client_info":{"package_name":"app.lessafakerny.android"}},"oauth_client":[{"client_id":"247548670509-7flpquvd9l60pc1jvrcjpmgemadbba1h.apps.googleusercontent.com","client_type":3}],"api_key":[{"current_key":"AIzaSyAWkpT24SASeuUgHJYmMv9j-itF7JNuceU"}],"services":{}}],"configuration_version":"1"}' > app/google-services.json
           fi
 
       - name: Setup debug keystore
@@ -88,10 +59,10 @@ EOF
             keytool -genkeypair -alias androiddebugkey -keypass android -keystore debug.keystore -storepass android -dname "CN=Android Debug,O=Android,C=US" -keyalg RSA -keysize 2048 -validity 10000
           fi
 
-      - name: Build debug APK
-        run: ./gradlew assembleDebug
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: lessafakerny-debug-apk
