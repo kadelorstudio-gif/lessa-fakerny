@@ -122,7 +122,11 @@ fun ExamsScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(10.dp))
+
+            app.lessafakerny.android.ui.components.GlassNativeAdCard()
+
+            Spacer(modifier = Modifier.height(10.dp))
 
             if (sortedExams.isEmpty()) {
                 Box(

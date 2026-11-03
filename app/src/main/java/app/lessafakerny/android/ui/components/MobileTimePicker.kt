@@ -127,7 +127,7 @@ fun MobileTimePicker(
                     value = selectedMinute,
                     label = strings.minuteLabel,
                     range = 0..59,
-                    step = 5,
+                    step = 1,
                     formatPattern = "%02d",
                     onValueChange = { newMinute ->
                         selectedMinute = newMinute

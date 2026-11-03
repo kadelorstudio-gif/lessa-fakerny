@@ -155,6 +155,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun endLectureEarly(lecture: Lecture) {
+        viewModelScope.launch {
+            val nowCal = Calendar.getInstance()
+            val currentMins = nowCal.get(Calendar.HOUR_OF_DAY) * 60 + nowCal.get(Calendar.MINUTE)
+            val newEndTime = currentMins.coerceAtLeast(lecture.startTimeMinutes + 1)
+            val updatedLecture = lecture.copy(endTimeMinutes = newEndTime, isAttended = true)
+            repository.updateLecture(updatedLecture)
+            repository.recordAttendanceForDate(lecture.id, todayDateString, true)
+        }
+    }
+
     fun addOrUpdateExam(
         id: Long = 0,
         subjectName: String,

@@ -286,6 +286,11 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
+            // Integrated Glass Native Ad
+            app.lessafakerny.android.ui.components.GlassNativeAdCard()
+
+            Spacer(modifier = Modifier.height(10.dp))
+
             // 4. Lectures List / Empty State
             if (todayLectures.isEmpty()) {
                 Box(
@@ -381,6 +386,7 @@ fun HomeScreen(
                             },
                             onEdit = { onEditLectureClick(lecture) },
                             onDelete = { viewModel.deleteLecture(lecture) },
+                            onEndEarly = { viewModel.endLectureEarly(lecture) },
                             strings = strings,
                             isEn = isEn,
                             is24Hour = is24Hour,
@@ -706,6 +712,7 @@ fun TodayLectureItemCard(
     onAttendanceToggle: () -> Unit,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    onEndEarly: (() -> Unit)? = null,
     strings: AppStrings,
     isEn: Boolean,
     is24Hour: Boolean = false,
@@ -802,38 +809,59 @@ fun TodayLectureItemCard(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Primary Attendance Button ("أنا حضرت" / "حاضر ✓")
+            // Action Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Attendance Action Button
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(if (isAttended) StatusSuccess.copy(alpha = 0.22f) else SurfaceElevated)
-                        .border(
-                            BorderStroke(1.dp, if (isAttended) StatusSuccess else GlassBorder),
-                            RoundedCornerShape(14.dp)
-                        )
-                        .clickable(onClick = onAttendanceToggle)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = if (isAttended) Icons.Default.CheckCircle else Icons.Default.Check,
-                            contentDescription = null,
-                            tint = if (isAttended) StatusSuccess else TextPrimary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = if (isAttended) strings.attendedStatus else strings.iAttendedBtn,
-                            color = if (isAttended) StatusSuccess else TextPrimary,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    // Attendance Action Button
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(if (isAttended) StatusSuccess.copy(alpha = 0.22f) else SurfaceElevated)
+                            .border(
+                                BorderStroke(1.dp, if (isAttended) StatusSuccess else GlassBorder),
+                                RoundedCornerShape(14.dp)
+                            )
+                            .clickable(onClick = onAttendanceToggle)
+                            .padding(horizontal = 14.dp, vertical = 8.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = if (isAttended) Icons.Default.CheckCircle else Icons.Default.Check,
+                                contentDescription = null,
+                                tint = if (isAttended) StatusSuccess else TextPrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (isAttended) strings.attendedStatus else strings.iAttendedBtn,
+                                color = if (isAttended) StatusSuccess else TextPrimary,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    // End Lecture Early button if ongoing
+                    if (isOngoing && onEndEarly != null) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(StatusWarning.copy(alpha = 0.18f))
+                                .border(BorderStroke(1.dp, StatusWarning.copy(alpha = 0.5f)), RoundedCornerShape(14.dp))
+                                .clickable(onClick = onEndEarly)
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = if (isEn) "End Early ⏹️" else "انتهت مبكراً ⏹️",
+                                color = StatusWarning,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
 

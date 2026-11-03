@@ -50,8 +50,10 @@ import app.lessafakerny.android.ui.theme.NeonViolet
 import app.lessafakerny.android.ui.theme.SoftLavender
 import app.lessafakerny.android.ui.theme.StatusError
 import app.lessafakerny.android.ui.theme.SurfaceCard
+import app.lessafakerny.android.ui.theme.SurfaceElevated
 import app.lessafakerny.android.ui.theme.TextMuted
 import app.lessafakerny.android.ui.theme.TextPrimary
+import app.lessafakerny.android.ui.theme.TextSecondary
 import app.lessafakerny.android.util.AppStrings
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -67,6 +69,7 @@ fun UserProfileDialog(
     onLogout: () -> Unit
 ) {
     var showAuth by remember { mutableStateOf(false) }
+    var showLogoutConfirmDialog by remember { mutableStateOf(false) }
     var isSendingEmail by remember { mutableStateOf(false) }
     var isReloadingUser by remember { mutableStateOf(false) }
     var cooldownTimer by remember { mutableStateOf(0) }
@@ -331,11 +334,7 @@ fun UserProfileDialog(
                         Spacer(modifier = Modifier.height(18.dp))
 
                         GlassButton(
-                            onClick = {
-                                FirebaseAuth.getInstance().signOut()
-                                onLogout()
-                                onDismiss()
-                            },
+                            onClick = { showLogoutConfirmDialog = true },
                             modifier = Modifier.fillMaxWidth(),
                             accentColor = StatusError,
                             testTag = "logout_btn"
@@ -392,5 +391,31 @@ fun UserProfileDialog(
                 }
             }
         }
+    }
+
+    if (showLogoutConfirmDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutConfirmDialog = false },
+            title = { Text(if (isEn) "Confirm Sign Out" else "تأكيد تسجيل الخروج", color = TextPrimary, fontWeight = FontWeight.Bold) },
+            text = { Text(if (isEn) "Are you sure you want to sign out of your account?" else "هل أنت تأكد من تسجيل الخروج من حسابك؟", color = TextSecondary) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showLogoutConfirmDialog = false
+                        FirebaseAuth.getInstance().signOut()
+                        onLogout()
+                        onDismiss()
+                    }
+                ) {
+                    Text(if (isEn) "Sign Out" else "تسجيل الخروج", color = StatusError, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutConfirmDialog = false }) {
+                    Text(strings.cancelBtn, color = TextMuted)
+                }
+            },
+            containerColor = SurfaceElevated
+        )
     }
 }

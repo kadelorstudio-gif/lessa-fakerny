@@ -284,6 +284,7 @@ fun TimetableScreen(
                             isOverlapping = isOverlapping,
                             onEdit = { onEditLectureClick(lecture) },
                             onDelete = { lectureToDelete = lecture },
+                            onEndEarly = { viewModel.endLectureEarly(lecture) },
                             strings = strings,
                             is24Hour = is24Hour,
                             language = language
@@ -471,10 +472,15 @@ fun TimetableLectureItem(
     isOverlapping: Boolean,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
+    onEndEarly: (() -> Unit)? = null,
     strings: AppStrings,
     is24Hour: Boolean = false,
     language: String = "ar"
 ) {
+    val nowCal = java.util.Calendar.getInstance()
+    val currentMins = nowCal.get(java.util.Calendar.HOUR_OF_DAY) * 60 + nowCal.get(java.util.Calendar.MINUTE)
+    val isOngoing = currentMins in lecture.startTimeMinutes until lecture.endTimeMinutes
+
     GlassCard(
         modifier = Modifier.fillMaxWidth(),
         tintColor = if (isOverlapping) StatusWarning else cardColor,
@@ -530,15 +536,39 @@ fun TimetableLectureItem(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(imageVector = Icons.Default.Schedule, contentDescription = null, tint = cardColor, modifier = Modifier.size(15.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    text = "${lecture.formatStartTime(is24Hour, language)} - ${lecture.formatEndTime(is24Hour, language)}",
-                    color = cardColor,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold
-                )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(imageVector = Icons.Default.Schedule, contentDescription = null, tint = cardColor, modifier = Modifier.size(15.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "${lecture.formatStartTime(is24Hour, language)} - ${lecture.formatEndTime(is24Hour, language)}",
+                        color = cardColor,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                if (isOngoing && onEndEarly != null) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(StatusWarning.copy(alpha = 0.18f))
+                            .border(BorderStroke(1.dp, StatusWarning.copy(alpha = 0.5f)), RoundedCornerShape(12.dp))
+                            .clickable(onClick = onEndEarly)
+                            .padding(horizontal = 10.dp, vertical = 5.dp)
+                    ) {
+                        Text(
+                            text = if (language == "en") "End Early ⏹️" else "انتهت مبكراً ⏹️",
+                            color = StatusWarning,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
 
             if (lecture.requiredTools.isNotBlank()) {
