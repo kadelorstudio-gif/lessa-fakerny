@@ -585,7 +585,9 @@ fun GlassBadge(
                 text = text,
                 color = color,
                 fontSize = 11.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                softWrap = false
             )
         }
     }

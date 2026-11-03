@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "247548670509",
+    "firebase_url": "https://lessa-fakerny-default-rtdb.firebaseio.com",
+    "project_id": "lessa-fakerny",
+    "storage_bucket": "lessa-fakerny.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:247548670509:android:f40b3204e470fa17283ea4",
+        "android_client_info": {
+          "package_name": "app.lessafakerny.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "247548670509-9iit19afa81evbtr346qimj6emfbh0br.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "app.lessafakerny.android",
+            "certificate_hash": "f3c8fe1132eb71fd2fd1af2bc4094525102f7b88"
+          }
+        },
+        {
+          "client_id": "247548670509-7flpquvd9l60pc1jvrcjpmgemadbba1h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWkpT24SASeuUgHJYmMv9j-itF7JNuceU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "247548670509-7flpquvd9l60pc1jvrcjpmgemadbba1h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

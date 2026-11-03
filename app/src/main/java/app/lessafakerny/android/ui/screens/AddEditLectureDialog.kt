@@ -12,16 +12,20 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -38,6 +42,7 @@ import app.lessafakerny.android.data.Lecture
 import app.lessafakerny.android.ui.components.GlassButton
 import app.lessafakerny.android.ui.components.GlassCard
 import app.lessafakerny.android.ui.components.GlassTextField
+import app.lessafakerny.android.ui.components.MobileTimePicker
 import app.lessafakerny.android.ui.theme.GlassBorder
 import app.lessafakerny.android.ui.theme.NeonCyan
 import app.lessafakerny.android.ui.theme.SoftLavender
@@ -55,6 +60,8 @@ import java.util.Calendar
 fun AddEditLectureDialog(
     lectureToEdit: Lecture? = null,
     initialDayOfWeek: Int = Calendar.SUNDAY,
+    is24Hour: Boolean = false,
+    userRole: String = "STUDENT",
     onDismiss: () -> Unit,
     onSave: (
         subjectName: String,
@@ -76,10 +83,8 @@ fun AddEditLectureDialog(
     var hallName by remember { mutableStateOf(lectureToEdit?.hallName ?: "") }
     var selectedDay by remember { mutableStateOf(lectureToEdit?.dayOfWeek ?: initialDayOfWeek) }
 
-    var startHour by remember { mutableStateOf((lectureToEdit?.startTimeMinutes ?: 540) / 60) }
-    var startMinute by remember { mutableStateOf((lectureToEdit?.startTimeMinutes ?: 540) % 60) }
-    var endHour by remember { mutableStateOf((lectureToEdit?.endTimeMinutes ?: 660) / 60) }
-    var endMinute by remember { mutableStateOf((lectureToEdit?.endTimeMinutes ?: 660) % 60) }
+    var startTimeMinutes by remember { mutableIntStateOf(lectureToEdit?.startTimeMinutes ?: 540) } // 09:00 AM
+    var endTimeMinutes by remember { mutableIntStateOf(lectureToEdit?.endTimeMinutes ?: 660) }   // 11:00 AM
 
     var cardColorHex by remember { mutableStateOf(lectureToEdit?.cardColorHex ?: "#00E5FF") }
     var requiredTools by remember { mutableStateOf(lectureToEdit?.requiredTools ?: "") }
@@ -104,7 +109,7 @@ fun AddEditLectureDialog(
         GlassCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(6.dp)
+                .padding(vertical = 12.dp)
                 .testTag("add_lecture_dialog"),
             shape = RoundedCornerShape(26.dp),
             tintColor = try { Color(android.graphics.Color.parseColor(cardColorHex)) } catch (e: Exception) { NeonCyan },
@@ -112,8 +117,11 @@ fun AddEditLectureDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(20.dp)
+                    .padding(18.dp)
                     .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .imePadding()
+                    .navigationBarsPadding()
             ) {
                 Text(
                     text = if (lectureToEdit == null) strings.addLectureTitle else strings.editLectureTitle,
@@ -136,7 +144,7 @@ fun AddEditLectureDialog(
                 GlassTextField(
                     value = doctorName,
                     onValueChange = { doctorName = it },
-                    label = strings.doctorNameLabel,
+                    label = if (userRole == "DOCTOR") (if (language == "en") "Instructor Name / Title" else "اسم المحاضر / الدكتور") else strings.doctorNameLabel,
                     placeholder = strings.doctorNamePlaceholder
                 )
 
@@ -186,48 +194,35 @@ fun AddEditLectureDialog(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Mobile Wheel Time Picker: Start Time
+                Text(strings.startTimeLabel, color = TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(4.dp))
+                MobileTimePicker(
+                    initialMinutesOfDay = startTimeMinutes,
+                    is24Hour = is24Hour,
+                    strings = strings,
+                    onTimeSelected = { newMins ->
+                        startTimeMinutes = newMins
+                        errorMessage = ""
+                    }
+                )
+
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Time Pickers Inputs (Start & End)
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(strings.startTimeLabel, color = TextSecondary, fontSize = 11.sp)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            GlassTextField(
-                                value = String.format(java.util.Locale.US, "%02d", startHour),
-                                onValueChange = { startHour = it.toIntOrNull()?.coerceIn(0, 23) ?: startHour },
-                                label = strings.hoursUnit,
-                                modifier = Modifier.weight(1f)
-                            )
-                            Text(":", color = SoftLavender, modifier = Modifier.padding(horizontal = 4.dp), fontWeight = FontWeight.Bold)
-                            GlassTextField(
-                                value = String.format(java.util.Locale.US, "%02d", startMinute),
-                                onValueChange = { startMinute = it.toIntOrNull()?.coerceIn(0, 59) ?: startMinute },
-                                label = strings.minutesUnit,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
+                // Mobile Wheel Time Picker: End Time
+                Text(strings.endTimeLabel, color = TextSecondary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.height(4.dp))
+                MobileTimePicker(
+                    initialMinutesOfDay = endTimeMinutes,
+                    is24Hour = is24Hour,
+                    strings = strings,
+                    onTimeSelected = { newMins ->
+                        endTimeMinutes = newMins
+                        errorMessage = ""
                     }
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(strings.endTimeLabel, color = TextSecondary, fontSize = 11.sp)
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            GlassTextField(
-                                value = String.format(java.util.Locale.US, "%02d", endHour),
-                                onValueChange = { endHour = it.toIntOrNull()?.coerceIn(0, 23) ?: endHour },
-                                label = strings.hoursUnit,
-                                modifier = Modifier.weight(1f)
-                            )
-                            Text(":", color = SoftLavender, modifier = Modifier.padding(horizontal = 4.dp), fontWeight = FontWeight.Bold)
-                            GlassTextField(
-                                value = String.format(java.util.Locale.US, "%02d", endMinute),
-                                onValueChange = { endMinute = it.toIntOrNull()?.coerceIn(0, 59) ?: endMinute },
-                                label = strings.minutesUnit,
-                                modifier = Modifier.weight(1f)
-                            )
-                        }
-                    }
-                }
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -264,8 +259,17 @@ fun AddEditLectureDialog(
                 )
 
                 if (errorMessage.isNotBlank()) {
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Text(errorMessage, color = StatusError, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(StatusError.copy(alpha = 0.15f))
+                            .border(BorderStroke(1.dp, StatusError.copy(alpha = 0.4f)), RoundedCornerShape(10.dp))
+                            .padding(8.dp)
+                    ) {
+                        Text(errorMessage, color = StatusError, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -285,9 +289,7 @@ fun AddEditLectureDialog(
                                 errorMessage = strings.errorSubjectEmpty
                                 return@GlassButton
                             }
-                            val startMins = startHour * 60 + startMinute
-                            val endMins = endHour * 60 + endMinute
-                            if (endMins <= startMins) {
+                            if (endTimeMinutes <= startTimeMinutes) {
                                 errorMessage = strings.errorEndTimeInvalid
                                 return@GlassButton
                             }
@@ -298,8 +300,8 @@ fun AddEditLectureDialog(
                                 hallNumber.ifBlank { "-" },
                                 hallName.ifBlank { if (language == "en") "Main Building" else "المبنى الرئيسي" },
                                 selectedDay,
-                                startMins,
-                                endMins,
+                                startTimeMinutes,
+                                endTimeMinutes,
                                 cardColorHex,
                                 requiredTools
                             )

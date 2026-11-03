@@ -52,7 +52,7 @@ import app.lessafakerny.android.ui.theme.TextPrimary
 import androidx.compose.material.icons.filled.MenuBook
 
 enum class AppScreen {
-    HOME, TIMETABLE, EXAMS, LEARN, STATS, SETTINGS
+    HOME, TIMETABLE, EXAMS, LEARN, STATS, SETTINGS, PRIVACY_POLICY, ABOUT
 }
 
 @Composable

@@ -239,12 +239,26 @@ fun MainAppContent(viewModel: MainViewModel, defaultScreen: AppScreen = AppScree
                             AppScreen.SETTINGS -> SettingsScreen(
                                 viewModel = viewModel,
                                 onOpenAuthDialog = { showAuthDialog = true },
+                                onNavigateToPrivacyPolicy = { currentScreen = AppScreen.PRIVACY_POLICY },
+                                onNavigateToAbout = { currentScreen = AppScreen.ABOUT },
                                 strings = strings,
                                 language = language
                             )
 
                             AppScreen.STATS -> AttendanceStatsScreen(
                                 viewModel = viewModel,
+                                strings = strings,
+                                language = language
+                            )
+
+                            AppScreen.PRIVACY_POLICY -> app.lessafakerny.android.ui.screens.PrivacyPolicyScreen(
+                                onNavigateBack = { currentScreen = AppScreen.SETTINGS },
+                                strings = strings,
+                                language = language
+                            )
+
+                            AppScreen.ABOUT -> app.lessafakerny.android.ui.screens.AboutScreen(
+                                onNavigateBack = { currentScreen = AppScreen.SETTINGS },
                                 strings = strings,
                                 language = language
                             )

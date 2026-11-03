@@ -67,6 +67,20 @@ fun UserProfileDialog(
     onLogout: () -> Unit
 ) {
     var showAuth by remember { mutableStateOf(false) }
+    var isSendingEmail by remember { mutableStateOf(false) }
+    var isReloadingUser by remember { mutableStateOf(false) }
+    var cooldownTimer by remember { mutableStateOf(0) }
+    var statusMessage by remember { mutableStateOf("") }
+    var isVerifiedState by remember(user) { mutableStateOf(user?.isEmailVerified == true) }
+
+    val isEn = language.equals("en", ignoreCase = true)
+
+    androidx.compose.runtime.LaunchedEffect(cooldownTimer) {
+        if (cooldownTimer > 0) {
+            kotlinx.coroutines.delay(1000L)
+            cooldownTimer -= 1
+        }
+    }
 
     if (showAuth) {
         AuthDialog(
@@ -108,7 +122,7 @@ fun UserProfileDialog(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = if (userRole == "DOCTOR") Icons.Default.School else Icons.Default.Person,
+                            imageVector = Icons.Default.Person,
                             contentDescription = null,
                             tint = NeonCyan,
                             modifier = Modifier.size(36.dp)
@@ -126,26 +140,17 @@ fun UserProfileDialog(
 
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    // Role Badge
+                    // Student Badge
                     Box(
                         modifier = Modifier
                             .clip(RoundedCornerShape(12.dp))
-                            .background(
-                                if (userRole == "DOCTOR") NeonViolet.copy(alpha = 0.2f)
-                                else NeonCyan.copy(alpha = 0.2f)
-                            )
-                            .border(
-                                BorderStroke(
-                                    1.dp,
-                                    if (userRole == "DOCTOR") NeonViolet else NeonCyan
-                                ),
-                                RoundedCornerShape(12.dp)
-                            )
+                            .background(NeonCyan.copy(alpha = 0.2f))
+                            .border(BorderStroke(1.dp, NeonCyan), RoundedCornerShape(12.dp))
                             .padding(horizontal = 12.dp, vertical = 4.dp)
                     ) {
                         Text(
-                            text = if (userRole == "DOCTOR") strings.roleDoctorLabel else strings.roleStudentLabel,
-                            color = if (userRole == "DOCTOR") NeonViolet else NeonCyan,
+                            text = strings.roleStudentLabel,
+                            color = NeonCyan,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -199,16 +204,126 @@ fun UserProfileDialog(
                                     Icon(
                                         imageVector = Icons.Default.CheckCircle,
                                         contentDescription = null,
-                                        tint = if (user.isEmailVerified) NeonCyan else StatusError,
+                                        tint = if (isVerifiedState) NeonCyan else StatusError,
                                         modifier = Modifier.size(16.dp)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = if (user.isEmailVerified) strings.verifiedBadge else strings.notVerifiedBadge,
-                                        color = if (user.isEmailVerified) NeonCyan else StatusError,
+                                        text = if (isVerifiedState) strings.verifiedBadge else strings.notVerifiedBadge,
+                                        color = if (isVerifiedState) NeonCyan else StatusError,
                                         fontSize = 12.sp,
                                         fontWeight = FontWeight.Bold
                                     )
+                                }
+                            }
+                        }
+
+                        // Real Email Verification Controls (if unverified)
+                        if (!isVerifiedState) {
+                            Spacer(modifier = Modifier.height(12.dp))
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(NeonViolet.copy(alpha = 0.12f))
+                                    .border(BorderStroke(1.dp, NeonViolet.copy(alpha = 0.4f)), RoundedCornerShape(14.dp))
+                                    .padding(12.dp)
+                            ) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    Text(
+                                        text = if (isEn) "Verify your email address to secure your account." else "يرجى تفعيل البريد الإلكتروني لتأمين الحساب واستعادة البيانات.",
+                                        color = SoftLavender,
+                                        fontSize = 11.sp,
+                                        lineHeight = 15.sp,
+                                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                    )
+
+                                    if (statusMessage.isNotBlank()) {
+                                        Spacer(modifier = Modifier.height(6.dp))
+                                        Text(
+                                            text = statusMessage,
+                                            color = NeonCyan,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(10.dp))
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        // Resend verification button
+                                        GlassButton(
+                                            onClick = {
+                                                if (cooldownTimer == 0 && !isSendingEmail) {
+                                                    isSendingEmail = true
+                                                    statusMessage = ""
+                                                    user.sendEmailVerification()
+                                                        .addOnCompleteListener { task ->
+                                                            isSendingEmail = false
+                                                            if (task.isSuccessful) {
+                                                                cooldownTimer = 30
+                                                                statusMessage = if (isEn) "Verification email sent!" else "تم إرسال رابط التفعيل بنجاح!"
+                                                            } else {
+                                                                statusMessage = task.exception?.localizedMessage ?: (if (isEn) "Failed to send email" else "فشل إرسال البريد")
+                                                            }
+                                                        }
+                                                }
+                                            },
+                                            modifier = Modifier.weight(1f),
+                                            enabled = cooldownTimer == 0 && !isSendingEmail,
+                                            accentColor = NeonViolet,
+                                            testTag = "resend_verification_btn"
+                                        ) {
+                                            Text(
+                                                text = if (cooldownTimer > 0) {
+                                                    if (isEn) "Wait ${cooldownTimer}s" else "انتظر ${cooldownTimer} ثانية"
+                                                } else if (isSendingEmail) {
+                                                    if (isEn) "Sending..." else "جاري الإرسال..."
+                                                } else {
+                                                    if (isEn) "Resend Email" else "إعادة إرسال البريد"
+                                                },
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+
+                                        // Check verification status button
+                                        app.lessafakerny.android.ui.components.GlassOutlineButton(
+                                            onClick = {
+                                                if (!isReloadingUser) {
+                                                    isReloadingUser = true
+                                                    user.reload().addOnCompleteListener { task ->
+                                                        isReloadingUser = false
+                                                        val refreshedUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+                                                        isVerifiedState = refreshedUser?.isEmailVerified == true
+                                                        statusMessage = if (refreshedUser?.isEmailVerified == true) {
+                                                            if (isEn) "Account verified successfully! 🎉" else "تم تفعيل الحساب بنجاح! 🎉"
+                                                        } else {
+                                                            if (isEn) "Email not verified yet. Check inbox." else "لم يتم التفعيل بعد. افتح صندوق البريد."
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            modifier = Modifier.weight(1f),
+                                            borderColor = NeonCyan,
+                                            testTag = "check_verification_status_btn"
+                                        ) {
+                                            Text(
+                                                text = if (isReloadingUser) {
+                                                    if (isEn) "Checking..." else "جاري التحقق..."
+                                                } else {
+                                                    if (isEn) "Check Status" else "التحقق من الحالة"
+                                                },
+                                                color = NeonCyan,
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }

@@ -97,7 +97,7 @@ fun AttendanceStatsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
                     Text(
                         text = if (isEn) "Attendance Analytics 📊" else "إحصائيات الحضور والغياب 📊",
                         color = NeonCyan,

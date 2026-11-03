@@ -93,6 +93,8 @@ import kotlinx.coroutines.delay
 fun SettingsScreen(
     viewModel: MainViewModel,
     onOpenAuthDialog: () -> Unit,
+    onNavigateToPrivacyPolicy: () -> Unit = {},
+    onNavigateToAbout: () -> Unit = {},
     strings: AppStrings = LocaleManager.ARABIC,
     language: String = "ar"
 ) {
@@ -152,7 +154,7 @@ fun SettingsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
                     Text(
                         text = strings.settingsHeaderTitle,
                         color = NeonCyan,
@@ -255,90 +257,6 @@ fun SettingsScreen(
                                     testTag = "logout_btn"
                                 ) {
                                     Text(strings.logoutButtonLabel, fontWeight = FontWeight.Bold, color = Color.White)
-                                }
-                            }
-                        }
-                    }
-                }
-
-                // 1.5 User Role Selection Card (Student vs Doctor/Lecturer)
-                item {
-                    GlassCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        tintColor = NeonCyan,
-                        shape = RoundedCornerShape(22.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = strings.roleSectionTitle,
-                                color = TextPrimary,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Spacer(modifier = Modifier.height(10.dp))
-
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                val isStudent = currentSettings.userRole != "DOCTOR"
-
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(14.dp))
-                                        .background(if (isStudent) NeonCyan.copy(alpha = 0.2f) else SurfaceElevated)
-                                        .border(
-                                            BorderStroke(1.dp, if (isStudent) NeonCyan else GlassBorder),
-                                            RoundedCornerShape(14.dp)
-                                        )
-                                        .clickable { viewModel.updateUserRole("STUDENT") }
-                                        .padding(12.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(
-                                            text = strings.roleStudentLabel,
-                                            color = if (isStudent) NeonCyan else TextPrimary,
-                                            fontSize = 13.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            text = strings.roleStudentDesc,
-                                            color = TextMuted,
-                                            fontSize = 10.sp,
-                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                        )
-                                    }
-                                }
-
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .clip(RoundedCornerShape(14.dp))
-                                        .background(if (!isStudent) NeonViolet.copy(alpha = 0.2f) else SurfaceElevated)
-                                        .border(
-                                            BorderStroke(1.dp, if (!isStudent) NeonViolet else GlassBorder),
-                                            RoundedCornerShape(14.dp)
-                                        )
-                                        .clickable { viewModel.updateUserRole("DOCTOR") }
-                                        .padding(12.dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(
-                                            text = strings.roleDoctorLabel,
-                                            color = if (!isStudent) NeonViolet else TextPrimary,
-                                            fontSize = 13.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                        Text(
-                                            text = strings.roleDoctorDesc,
-                                            color = TextMuted,
-                                            fontSize = 10.sp,
-                                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                                        )
-                                    }
                                 }
                             }
                         }
@@ -871,6 +789,99 @@ fun SettingsScreen(
                                             }
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 6.5 Quick Access & App Shortcuts
+                item {
+                    GlassCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        tintColor = NeonCyan,
+                        shape = RoundedCornerShape(22.dp),
+                        onClick = {
+                            if (androidx.core.content.pm.ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
+                                val pinShortcutInfo = androidx.core.content.pm.ShortcutInfoCompat.Builder(context, "lessafakerny_home_shortcut")
+                                    .setShortLabel(if (isEn) "Lessa Fakerny" else "لسه فاكرني")
+                                    .setLongLabel(if (isEn) "Open Lessa Fakerny" else "فتح تطبيق لسه فاكرني")
+                                    .setIcon(androidx.core.graphics.drawable.IconCompat.createWithResource(context, app.lessafakerny.android.R.mipmap.ic_launcher))
+                                    .setIntent(Intent(context, app.lessafakerny.android.MainActivity::class.java).apply {
+                                        action = Intent.ACTION_VIEW
+                                    })
+                                    .build()
+                                androidx.core.content.pm.ShortcutManagerCompat.requestPinShortcut(context, pinShortcutInfo, null)
+                                Toast.makeText(context, if (isEn) "Shortcut request sent" else "تم إرسال طلب إضافة الاختصار", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, if (isEn) "Pinning shortcuts not supported on this device" else "الجهاز لا يدعم إضافة الاختصارات", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        testTag = "add_to_home_shortcut_card"
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.CloudDone, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(22.dp))
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(if (isEn) "Add Shortcut to Home Screen" else "إضافة اختصار للشاشة الرئيسية", color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                    Text(if (isEn) "Pin app shortcut on home screen" else "تثبيت اختصار التطبيق على الشاشة الرئيسية", color = SoftLavender, fontSize = 11.sp)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 6.6 About & User Guide
+                item {
+                    GlassCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        tintColor = NeonViolet,
+                        shape = RoundedCornerShape(22.dp),
+                        onClick = onNavigateToAbout,
+                        testTag = "about_app_card"
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.AccountCircle, contentDescription = null, tint = NeonViolet, modifier = Modifier.size(22.dp))
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(if (isEn) "About & How to Use" else "عن التطبيق ودليل الاستخدام", color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                    Text(if (isEn) "App features, exam guide & version v1.0" else "إصدار التطبيق v1.0 ودليل الاستخدام", color = SoftLavender, fontSize = 11.sp)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // 6.7 Privacy Policy
+                item {
+                    GlassCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        tintColor = NeonCyan,
+                        shape = RoundedCornerShape(22.dp),
+                        onClick = onNavigateToPrivacyPolicy,
+                        testTag = "privacy_policy_card"
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Lock, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(22.dp))
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(if (isEn) "Privacy Policy" else "سياسة الخصوصية", color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                    Text(if (isEn) "Data usage, cloud sync & security" else "استخدام البيانات، التشفير، والمزامنة", color = SoftLavender, fontSize = 11.sp)
                                 }
                             }
                         }

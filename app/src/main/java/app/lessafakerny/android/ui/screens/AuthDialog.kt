@@ -503,6 +503,7 @@ fun AuthDialog(
                                 .addOnCompleteListener { task ->
                                     isLoading = false
                                     if (task.isSuccessful) {
+                                        auth.currentUser?.sendEmailVerification()
                                         onAuthSuccess()
                                     } else {
                                         errorMessage = translateError(task.exception)

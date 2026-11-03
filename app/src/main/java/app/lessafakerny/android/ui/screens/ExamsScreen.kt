@@ -101,7 +101,7 @@ fun ExamsScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
                     Text(
                         text = strings.examsHeaderTitle,
                         color = NeonViolet,
