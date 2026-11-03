@@ -208,7 +208,7 @@ fun HomeScreen(
                             if (isEn) {
                                 SimpleDateFormat("EEEE, d MMMM yyyy", Locale.ENGLISH)
                             } else {
-                                SimpleDateFormat("EEEE, d MMMM yyyy", Locale("ar"))
+                                SimpleDateFormat("EEEE, d MMMM yyyy", Locale.forLanguageTag("ar"))
                             }
                         } catch (e: Exception) {
                             SimpleDateFormat("EEEE, d MMMM yyyy", Locale.getDefault())

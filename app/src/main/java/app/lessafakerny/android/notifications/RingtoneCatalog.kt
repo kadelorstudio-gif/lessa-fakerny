@@ -6,6 +6,8 @@ import android.media.MediaPlayer
 import android.net.Uri
 import android.util.Log
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeMute
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ElectricBolt
 import androidx.compose.material.icons.filled.GraphicEq
@@ -13,8 +15,6 @@ import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material.icons.filled.SelfImprovement
-import androidx.compose.material.icons.filled.VolumeMute
-import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.ui.graphics.vector.ImageVector
 import app.lessafakerny.android.R
@@ -95,7 +95,7 @@ object RingtoneCatalog {
             descriptionAr = "رنين كريستالي حاد ومسموع حتى في الأماكن المزدحمة",
             descriptionEn = "High-clarity crystal ping audible in noisy halls",
             rawResId = R.raw.tone_clear_chime,
-            icon = Icons.Default.VolumeUp
+            icon = Icons.AutoMirrored.Filled.VolumeUp
         ),
         RingtoneOption(
             key = "GENTLE",
@@ -122,7 +122,7 @@ object RingtoneCatalog {
             descriptionAr = "إشعار مرئي على الشاشة فقط دون إطلاق أي صوت",
             descriptionEn = "Visual notification popup and banner without playing audio",
             rawResId = null,
-            icon = Icons.Default.VolumeMute
+            icon = Icons.AutoMirrored.Filled.VolumeMute
         )
     )
 

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CheckCircle
@@ -147,7 +148,7 @@ fun GlassBottomNavBar(
             NavBarItem(
                 screen = AppScreen.LEARN,
                 title = strings.navLearn,
-                icon = Icons.Default.MenuBook,
+                icon = Icons.AutoMirrored.Filled.MenuBook,
                 isSelected = currentScreen == AppScreen.LEARN,
                 accentColor = NeonCyan,
                 onClick = { onScreenSelected(AppScreen.LEARN) }
