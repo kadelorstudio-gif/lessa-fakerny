@@ -320,6 +320,14 @@ fun MainAppContent(viewModel: MainViewModel, defaultScreen: AppScreen = AppScree
                         showAuthDialog = false
                         viewModel.syncWithCloud()
                     },
+                    onNavigateToPrivacyPolicy = {
+                        showAuthDialog = false
+                        currentScreen = AppScreen.PRIVACY_POLICY
+                    },
+                    onNavigateToGuide = {
+                        showAuthDialog = false
+                        currentScreen = AppScreen.ABOUT
+                    },
                     strings = strings,
                     language = language
                 )

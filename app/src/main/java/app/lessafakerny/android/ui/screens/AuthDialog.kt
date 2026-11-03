@@ -96,6 +96,8 @@ import kotlinx.coroutines.tasks.await
 fun AuthDialog(
     onDismiss: () -> Unit,
     onAuthSuccess: () -> Unit,
+    onNavigateToPrivacyPolicy: () -> Unit = {},
+    onNavigateToGuide: () -> Unit = {},
     strings: AppStrings = LocaleManager.ARABIC,
     language: String = "ar"
 ) {
@@ -547,6 +549,47 @@ fun AuthDialog(
                 }
 
                 Spacer(modifier = Modifier.height(10.dp))
+
+                // Public Policy & Guide Links for Google Play Compliance
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = if (isEn) "Privacy Policy" else "سياسة الخصوصية",
+                        color = NeonCyan,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .clickable {
+                                onDismiss()
+                                onNavigateToPrivacyPolicy()
+                            }
+                            .padding(horizontal = 6.dp, vertical = 4.dp)
+                    )
+                    Text(
+                        text = "•",
+                        color = TextMuted,
+                        fontSize = 12.sp
+                    )
+                    Text(
+                        text = if (isEn) "User Guide & About" else "دليل الاستخدام وعن التطبيق",
+                        color = NeonViolet,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .clickable {
+                                onDismiss()
+                                onNavigateToGuide()
+                            }
+                            .padding(horizontal = 6.dp, vertical = 4.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(6.dp))
 
                 // Dismiss / Close
                 TextButton(

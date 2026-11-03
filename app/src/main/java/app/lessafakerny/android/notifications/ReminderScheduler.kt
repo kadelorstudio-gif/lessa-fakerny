@@ -101,6 +101,7 @@ object ReminderScheduler {
             if (isEnabled && triggerTime > now) {
                 val intent = Intent(context, ReminderBroadcastReceiver::class.java).apply {
                     putExtra("EXTRA_ID", requestCode)
+                    putExtra("EXTRA_LECTURE_ID", lecture.id)
                     putExtra("EXTRA_CHANNEL_ID", channelId)
                     putExtra("EXTRA_TONE", toneKey)
                     putExtra("EXTRA_TITLE", copy.first)
@@ -118,18 +119,20 @@ object ReminderScheduler {
                 )
 
                 try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        try {
+                    val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, pendingIntent)
+                    alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
+                    Log.d(TAG, "Scheduled AlarmClock lecture reminder $requestCode for ${lecture.subjectName} at $triggerTime")
+                } catch (e: Exception) {
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-                        } catch (se: Exception) {
+                        } else {
                             alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
                         }
-                    } else {
+                    } catch (e2: Exception) {
                         alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
                     }
-                    Log.d(TAG, "Scheduled lecture reminder $requestCode for ${lecture.subjectName} with tone $toneKey at $triggerTime")
-                } catch (e: Exception) {
-                    Log.w(TAG, "Failed to schedule lecture alarm $requestCode", e)
+                    Log.d(TAG, "Scheduled fallback lecture reminder $requestCode for ${lecture.subjectName} at $triggerTime")
                 }
             } else {
                 cancelAlarm(context, requestCode)
@@ -216,18 +219,20 @@ object ReminderScheduler {
                 )
 
                 try {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        try {
+                    val alarmClockInfo = AlarmManager.AlarmClockInfo(triggerTime, pendingIntent)
+                    alarmManager.setAlarmClock(alarmClockInfo, pendingIntent)
+                    Log.d(TAG, "Scheduled AlarmClock exam reminder $requestCode for ${exam.subjectName} at $triggerTime")
+                } catch (e: Exception) {
+                    try {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
-                        } catch (se: Exception) {
+                        } else {
                             alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
                         }
-                    } else {
+                    } catch (e2: Exception) {
                         alarmManager.set(AlarmManager.RTC_WAKEUP, triggerTime, pendingIntent)
                     }
-                    Log.d(TAG, "Scheduled exam reminder $requestCode for ${exam.subjectName} with tone $toneKey at $triggerTime")
-                } catch (e: Exception) {
-                    Log.w(TAG, "Failed to schedule exam alarm $requestCode", e)
+                    Log.d(TAG, "Scheduled fallback exam reminder $requestCode for ${exam.subjectName} at $triggerTime")
                 }
             } else {
                 cancelAlarm(context, requestCode)
