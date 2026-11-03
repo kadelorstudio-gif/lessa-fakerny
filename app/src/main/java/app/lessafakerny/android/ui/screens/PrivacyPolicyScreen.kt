@@ -24,8 +24,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Shield
+import app.lessafakerny.android.util.AppLinks
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -176,6 +179,103 @@ fun PrivacyPolicyScreen(
                 body = strings.privacyPolicySection4Body
             )
 
+            // Section: Official Web & Legal Links
+            GlassCard(
+                modifier = Modifier.fillMaxWidth(),
+                tintColor = NeonCyan,
+                useDualNeonBorder = true,
+                shape = RoundedCornerShape(22.dp)
+            ) {
+                Column(modifier = Modifier.padding(18.dp)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .clip(CircleShape)
+                                .background(NeonCyan.copy(alpha = 0.2f))
+                                .border(BorderStroke(1.dp, NeonCyan.copy(alpha = 0.6f)), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Default.Language, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(20.dp))
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = if (isEn) "Official Online Documents" else "روابط الموقع والوثائق الرسمية أونلاين",
+                                color = NeonCyan,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = if (isEn) "Available 24/7 on GitHub Pages" else "منشورة ومتاحة دائماً على GitHub Pages",
+                                color = SoftLavender,
+                                fontSize = 11.sp
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    // 1. Online Privacy Policy Button
+                    GlassButton(
+                        onClick = { AppLinks.openPrivacyPolicy(context) },
+                        modifier = Modifier.fillMaxWidth(),
+                        accentColor = NeonCyan
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Link, contentDescription = null, tint = Color(0xFF050816))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isEn) "Open Privacy Policy on Web 🌐" else "فتح سياسة الخصوصية على الويب 🌐",
+                                color = Color(0xFF050816),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // 2. Terms & Conditions Button
+                    GlassButton(
+                        onClick = { AppLinks.openTerms(context) },
+                        modifier = Modifier.fillMaxWidth(),
+                        accentColor = NeonViolet
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Link, contentDescription = null, tint = Color.White)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isEn) "Terms & Conditions (الشروط والأحكام) 📜" else "عرض الشروط والأحكام أونلاين 📜",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // 3. Official App Website Button
+                    GlassButton(
+                        onClick = { AppLinks.openWebsite(context) },
+                        modifier = Modifier.fillMaxWidth(),
+                        accentColor = Color(0xFF1E293B)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Language, contentDescription = null, tint = NeonCyan)
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (isEn) "Visit Official App Website 🏛️" else "زيارة الموقع الرسمي للتطبيق 🏛️",
+                                color = NeonCyan,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp
+                            )
+                        }
+                    }
+                }
+            }
+
             // Section 5: Contact
             GlassCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -200,17 +300,7 @@ fun PrivacyPolicyScreen(
                     Spacer(modifier = Modifier.height(14.dp))
 
                     GlassButton(
-                        onClick = {
-                            try {
-                                val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                                    data = Uri.parse("mailto:Kadelor-studio@gmail.com")
-                                    putExtra(Intent.EXTRA_SUBJECT, "Privacy Inquiry - Lessa Fakerny?")
-                                }
-                                context.startActivity(emailIntent)
-                            } catch (e: Exception) {
-                                Toast.makeText(context, "Kadelor-studio@gmail.com", Toast.LENGTH_LONG).show()
-                            }
-                        },
+                        onClick = { AppLinks.sendEmail(context, "Privacy Inquiry - Lessa Fakerny?") },
                         modifier = Modifier.fillMaxWidth(),
                         accentColor = NeonViolet
                     ) {

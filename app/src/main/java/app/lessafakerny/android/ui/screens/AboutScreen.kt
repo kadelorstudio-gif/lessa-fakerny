@@ -28,9 +28,12 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Timer
+import app.lessafakerny.android.util.AppLinks
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -241,25 +244,46 @@ fun AboutScreen(
 
                     Spacer(modifier = Modifier.height(14.dp))
 
-                    GlassButton(
-                        onClick = {
-                            try {
-                                val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                                    data = Uri.parse("mailto:Kadelor-studio@gmail.com")
-                                    putExtra(Intent.EXTRA_SUBJECT, "Contact - Lessa Fakerny?")
-                                }
-                                context.startActivity(emailIntent)
-                            } catch (e: Exception) {
-                                Toast.makeText(context, "Kadelor-studio@gmail.com", Toast.LENGTH_LONG).show()
-                            }
-                        },
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        accentColor = NeonCyan
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        GlassButton(
+                            onClick = { AppLinks.openWebsite(context) },
+                            modifier = Modifier.weight(1f),
+                            accentColor = NeonCyan
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Language, contentDescription = null, tint = Color(0xFF050816), modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(if (isEn) "Website 🌐" else "الموقع 🌐", color = Color(0xFF050816), fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                            }
+                        }
+
+                        GlassButton(
+                            onClick = { AppLinks.openTerms(context) },
+                            modifier = Modifier.weight(1f),
+                            accentColor = NeonViolet
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Link, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(if (isEn) "Terms 📜" else "الشروط 📜", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 11.sp)
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    GlassButton(
+                        onClick = { AppLinks.sendEmail(context, "Contact - Lessa Fakerny?") },
+                        modifier = Modifier.fillMaxWidth(),
+                        accentColor = Color(0xFF1E293B)
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Email, contentDescription = null, tint = Color(0xFF050816))
+                            Icon(Icons.Default.Email, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(strings.aboutContactDevBtn, color = Color(0xFF050816), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                            Text(strings.aboutContactDevBtn, color = NeonCyan, fontWeight = FontWeight.Bold, fontSize = 11.sp)
                         }
                     }
                 }

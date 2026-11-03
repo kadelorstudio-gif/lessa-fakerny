@@ -30,7 +30,9 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Link
 import androidx.compose.material.icons.filled.Lock
+import app.lessafakerny.android.util.AppLinks
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.PlayCircle
@@ -888,6 +890,60 @@ fun SettingsScreen(
                     }
                 }
 
+                // 6.8 Terms & Conditions (الشروط والأحكام)
+                item {
+                    GlassCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        tintColor = NeonViolet,
+                        shape = RoundedCornerShape(22.dp),
+                        onClick = { AppLinks.openTerms(context) },
+                        testTag = "terms_card"
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Link, contentDescription = null, tint = NeonViolet, modifier = Modifier.size(22.dp))
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(if (isEn) "Terms & Conditions (الشروط والأحكام)" else "الشروط والأحكام الرسمية", color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                    Text(if (isEn) "Usage terms, license & academic disclaimer" else "شروط الاستخدام، الترخيص، والتنويه الأكاديمي", color = SoftLavender, fontSize = 11.sp)
+                                }
+                            }
+                            Text("📜", fontSize = 16.sp)
+                        }
+                    }
+                }
+
+                // 6.9 Official Website (الموقع الرسمي)
+                item {
+                    GlassCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        tintColor = NeonCyan,
+                        shape = RoundedCornerShape(22.dp),
+                        onClick = { AppLinks.openWebsite(context) },
+                        testTag = "official_website_card"
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(Icons.Default.Language, contentDescription = null, tint = NeonCyan, modifier = Modifier.size(22.dp))
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(if (isEn) "Official Web Hub (الموقع الرسمي)" else "الموقع الرسمي للتطبيق", color = TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                    Text(if (isEn) "kadelorstudio-gif.github.io/lessa-fakerny" else "kadelorstudio-gif.github.io/lessa-fakerny", color = SoftLavender, fontSize = 11.sp)
+                                }
+                            }
+                            Text("🌐", fontSize = 16.sp)
+                        }
+                    }
+                }
+
                 // 7. Developer & Studio Information (Requirement 10.D)
                 item {
                     GlassCard(
@@ -926,30 +982,34 @@ fun SettingsScreen(
 
                             Spacer(modifier = Modifier.height(14.dp))
 
-                            GlassButton(
-                                onClick = {
-                                    try {
-                                        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
-                                            data = Uri.parse("mailto:Kadelor-studio@gmail.com")
-                                            putExtra(Intent.EXTRA_SUBJECT, strings.contactEmailSubject)
-                                        }
-                                        context.startActivity(emailIntent)
-                                    } catch (e: Exception) {
-                                        Toast.makeText(
-                                            context,
-                                            if (isEn) "No email app installed on this device" else "لم يتم العثور على تطبيق بريد إلكتروني",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                },
+                            Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                accentColor = NeonCyan,
-                                testTag = "contact_dev_btn"
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Email, contentDescription = null, tint = Color(0xFF050816))
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(strings.contactDevBtn, fontWeight = FontWeight.Bold, color = Color(0xFF050816))
+                                GlassButton(
+                                    onClick = { AppLinks.sendEmail(context, strings.contactEmailSubject) },
+                                    modifier = Modifier.weight(1f),
+                                    accentColor = NeonCyan,
+                                    testTag = "contact_dev_btn"
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.Email, contentDescription = null, tint = Color(0xFF050816), modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(strings.contactDevBtn, fontWeight = FontWeight.Bold, color = Color(0xFF050816), fontSize = 11.sp)
+                                    }
+                                }
+
+                                GlassButton(
+                                    onClick = { AppLinks.openWebsite(context) },
+                                    modifier = Modifier.weight(1f),
+                                    accentColor = NeonViolet,
+                                    testTag = "visit_website_btn"
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.Language, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(if (isEn) "Website" else "الموقع", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 11.sp)
+                                    }
                                 }
                             }
                         }
